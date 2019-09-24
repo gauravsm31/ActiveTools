@@ -1,7 +1,6 @@
 from __future__ import print_function
-
+import postgres
 import sys
-
 from pyspark.sql import SparkSession
 
 
@@ -15,6 +14,12 @@ if __name__ == "__main__":
         .appName("PythonSort")\
         .getOrCreate()
 
+    def write_to_postgres(out_df, table_name):
+        table = table_name
+        mode = "append"
+        connector = postgres.PostgresConnector()
+        connector.write(out_df, table, mode)
+
     # Function where input is import lines in Jupyter Notebook Code and output is libraraies
 
     lines = spark.read.text(sys.argv[1]).rdd.map(lambda r: r[0])
@@ -25,7 +30,12 @@ if __name__ == "__main__":
     .map(lambda x: x[0].split('.')).map(lambda x: x[0].split('\\')) \
     .map(lambda x: x[0]) \
     .map(lambda x: (x,1)) \
-    .reduceByKey(lambda n,m: n+m).map(lambda x: x[0])
+    .reduceByKey(lambda n,m: n+m) \
+    .map(lambda x: x[0])
+
+    lib_df = ls.toDF(["library"])
+
+    write_to_postgres(lib_df, "lib_counts")
 
     output = ls.collect()
 
@@ -34,9 +44,12 @@ if __name__ == "__main__":
     for l in output:
         OutF.write("%s" %l )
         OutF.write("\n")
+    OutF.write("%d" %lib_count)
     OutF.close()
 
     for l in output:
         print(l)
+    print(lib_count)
+
 
     spark.stop()
