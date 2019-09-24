@@ -1,0 +1,2 @@
+spark-submit --master spark://ec2-54-244-2-49.us-west-2.compute.amazonaws.com:7077 --packages org.postgresql:postgresql:42.1.1 library_count.py s3a://gauravdatabeamdata/sample_data/data/notebooks/nb_1000546.ipynb
+
