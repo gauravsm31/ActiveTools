@@ -8,8 +8,8 @@ class PostgresConnector(object):
         self.database_name = 'postgres'
         self.hostname = 'ip-10-0-0-10'
         self.url_connect = "jdbc:postgresql://{hostname}:5432/{db}".format(hostname=self.hostname, db=self.database_name)
-        self.properties = {"user":'DBUSER',
-                      "password":'POSTGRES_PW',
+        self.properties = {"user":'gaurav',
+                      "password":'Ichwisenicht_31',
                       "driver": "org.postgresql.Driver"
                      }
 
