@@ -34,6 +34,8 @@ if __name__ == "__main__":
     .reduceByKey(lambda n,m: n+m) \
     .map(lambda x: x[0])
 
+    lib_count = ls.count()
+
     lib_df = ls.map(lambda x: Row(x)).toDF(["library"])
 
     write_to_postgres(lib_df, "lib_counts")
