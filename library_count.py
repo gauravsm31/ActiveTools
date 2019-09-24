@@ -2,7 +2,7 @@ from __future__ import print_function
 import postgres
 import sys
 from pyspark.sql import SparkSession
-import pyspark
+from pyspark.sql import Row
 
 
 if __name__ == "__main__":
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     .reduceByKey(lambda n,m: n+m) \
     .map(lambda x: x[0])
 
-    lib_df = ls.toDF(["library"])
+    lib_df = ls.map(lambda x: Row(x)).toDF(["library"])
 
     write_to_postgres(lib_df, "lib_counts")
 
