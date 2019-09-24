@@ -2,6 +2,7 @@ from __future__ import print_function
 import postgres
 import sys
 from pyspark.sql import SparkSession
+import pyspark
 
 
 if __name__ == "__main__":
