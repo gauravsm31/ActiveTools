@@ -73,17 +73,6 @@ class ProcessNotebookData(object):
 
         return processed_df
 
-    def read_notebook_from_s3(self):
-        print("start the read notebooks function:")
-        loadData = LoadData.DataIngestion(self.date)
-        data_file = loadData.data_file
-        s3_bucket = self.bucket
-
-        file_name = "s3a://{bucket}/{file_name}".format(bucket = s3_bucket, file_name = data_file)
-        mode = "PERMISSIVE"
-        print('Reading file: ' + file_name)
-
-        return self.spark.read.csv(file_name, header = True, mode = mode, schema = self.schema)
 
     def write_to_postgres(self, processed_df, table_name):
         mode = "append"
