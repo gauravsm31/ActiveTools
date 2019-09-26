@@ -70,13 +70,9 @@ class ProcessNotebookData(object):
         .reduceByKey(lambda n,m: n+m) \
         .map(lambda x: ('lib',1)) \
         .reduceByKey(lambda n,m: n+m) \
-        .map(lambda x : (notebook_id,lib_count))
-
-
+        .map(lambda x : (notebook_id,x[1]))
         #lib_count = ls.count()
-
         #self.spark.stop()
-
         return ls
 
 
