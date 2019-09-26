@@ -8,8 +8,6 @@ class ProcessNotebooks(object):
     Class handles methods related to library processing.
     """
 
-    def __init__(self):
-
     def ProcessEachNotebook(self, notebook_url_df_row):
 
         print("Processing One Notebook..................................")
