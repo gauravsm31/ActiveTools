@@ -62,7 +62,7 @@ class ProcessNotebookData(object):
 
         files_urls_df = self.NotebookUrlListToDF(file_list)
         # Farm out audio files to Spark workers with a map
-
+        print('got dataframe ..................................')
 
         processed_rdd = (
             files_urls_df
@@ -70,8 +70,7 @@ class ProcessNotebookData(object):
             .map(process_notebooks.ProcessEachNotebook)
         )
 
-        p = processed_rdd.collect()
-        print(p)
+
 
         processed_schema = StructType([StructField("notebook_id", StringType(), True),
                                              StructField("lib_counts", StringType(), False  )])
