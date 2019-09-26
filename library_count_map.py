@@ -70,15 +70,19 @@ class ProcessNotebookData(object):
 
         print('got processed rdd ..................................')
 
+        things = processed_rdd.collect()
+        for thing in things:
+            print(thing)
+
 
         processed_schema = StructType([StructField("notebook_id", StringType(), True),
                                              StructField("lib_counts", StringType(), False  )])
 
         processed_df = processed_rdd \
                       .map(lambda x: Row(x)) \
-                      .toDF(processed_schema) \
-                      .select("notebook_id", "lib_counts") \
-            #.toDF(["notebook_id", "lib_counts"])
+                      #.toDF(processed_schema) \
+                      #.select("notebook_id", "lib_counts") \
+                      .toDF(["notebook_id", "lib_counts"])
 
         print('got processed dataframe ..................................')
 
