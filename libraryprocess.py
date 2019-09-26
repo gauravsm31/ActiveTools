@@ -10,10 +10,6 @@ class ProcessNotebooks(object):
 
     def __init__(self):
 
-        self.spark = SparkSession \
-            .builder \
-            .getOrCreate()
-
     def ProcessEachNotebook(self, notebook_url_df_row):
 
         print("Processing One Notebook..................................")
