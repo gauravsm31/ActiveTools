@@ -88,7 +88,7 @@ class ProcessNotebookData(object):
         #                .map(lambda x: process_notebooks.ProcessEachNotebook(x))
 
         for file in file_list:
-            processed_rdd = ProcessEachFile(file)
+            processed_rdd = self.ProcessEachFile(file)
 
 
         thing = processed_rdd.collect()
