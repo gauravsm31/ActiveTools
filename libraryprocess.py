@@ -8,6 +8,9 @@ class ProcessNotebooks:
     Class handles methods related to library processing.
     """
 
+    def __init__(self):
+        return
+        
     def ProcessEachNotebook(self, notebook_url_df_row):
 
         self.spark = SparkSession\
