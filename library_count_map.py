@@ -91,25 +91,18 @@ class ProcessNotebookData(object):
         for file in file_list:
             processed_rdd = self.ProcessEachFile(file)
 
-
-        thing = processed_rdd.collect()
-        print(thing)
-        print('got processed rdd ..................................')
-
-
-
-        processed_schema = StructType([StructField("notebook_id", StringType(), True),
+            processed_schema = StructType([StructField("notebook_id", StringType(), True),
                                              StructField("lib_counts", StringType(), False  )])
 
-        processed_df = processed_rdd \
-                      .map(lambda x: Row(x)) \
-                      .toDF(processed_schema) \
-                      .select("notebook_id", "lib_counts") \
-                      #.toDF(["notebook_id", "lib_counts"])
+            processed_df = processed_rdd \
+                          .map(lambda x: Row(x)) \
+                          .toDF(processed_schema) \
+                          .select("notebook_id", "lib_counts") \
+                          #.toDF(["notebook_id", "lib_counts"])
 
-        print('got processed dataframe ..................................')
+            self.write_to_postgres(processed_df, "lib_counts")
 
-        return processed_df
+        return
 
 
     def write_to_postgres(self, processed_df, table_name):
@@ -124,10 +117,10 @@ class ProcessNotebookData(object):
         file_list = self.getNotebookFileLocations()
 
         print("Sending files to process...")
-        processed_df = self.NotebookMapper(file_list)
+        self.NotebookMapper(file_list)
 
-        print("Saving counts table into Postgres...")
-        self.write_to_postgres(processed_df, "lib_counts")
+        #print("Saving counts table into Postgres...")
+        #self.write_to_postgres(processed_df, "lib_counts")
 
         print("Saved To Postgres .......................................")
 
