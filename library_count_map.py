@@ -45,7 +45,7 @@ class ProcessNotebookData(object):
                 file_list.append(key['Key'])
             print("List count = " + str(len(file_list)))
         return file_list
-        
+
 
     def ProcessEachNotebook(self, notebook_url_df_row):
         file_path = notebook_url_df_row.url
@@ -81,7 +81,7 @@ class ProcessNotebookData(object):
         processed__rdd = (
             files_urls_df
             .rdd
-            .map(ProcessEachNotebook)
+            .map(self.ProcessEachNotebook)
         )
 
         processed_schema = StructType([StructField("notebook_id", StringType(), False),
