@@ -63,6 +63,7 @@ class ProcessNotebookData(object):
         files_urls_df = self.NotebookUrlListToDF(file_list)
         # Farm out audio files to Spark workers with a map
         print('got dataframe ..................................')
+        print(files_urls_df.to_string())
 
         processed_rdd = files_urls_df \
                         .rdd \
