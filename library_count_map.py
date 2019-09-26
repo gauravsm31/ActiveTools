@@ -54,7 +54,7 @@ class ProcessNotebookData(object):
         files_urls_df = self.spark.createDataFrame(url_list_rdd, url_list_schema)
         return files_urls_df
 
-    def ProcessEachFile(file_path):
+    def ProcessEachFile(self, file_path):
 
         file_name = os.path.basename(file_path)
         notebook_id = os.path.splitext(file_name)[0]
