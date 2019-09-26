@@ -89,6 +89,7 @@ class ProcessNotebookData(object):
 
         processed_df = (
             processed_rdd
+            .rdd
             .map(lambda x: Row(x))
             .toDF(processed_schema)
             .select("notebook_id", "lib_counts")
