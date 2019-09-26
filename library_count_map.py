@@ -89,11 +89,13 @@ class ProcessNotebookData(object):
 
         processed_df = (
             processed_rdd
-            .map(lambda x: [x[0],x[1]])
+            .map(lambda x: [x[0],x[1]]).collect()
             #.toDF(processed_schema)
             #.select("notebook_id", "lib_counts")
-            .toDF(["notebook_id", "lib_counts"])
+            #.toDF(["notebook_id", "lib_counts"])
         )
+
+        print(processed_df)
 
         return processed_df
 
