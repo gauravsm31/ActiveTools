@@ -70,8 +70,11 @@ class ProcessNotebookData(object):
             .map(process_notebooks.ProcessEachNotebook)
         )
 
+        p = processed_rdd.collect()
+        print(p)
+
         processed_schema = StructType([StructField("notebook_id", StringType(), True),
-                                             StructField("lib_counts", StringType(), False)])
+                                             StructField("lib_counts", StringType(), False  )])
 
         processed_df = (
             processed_rdd
