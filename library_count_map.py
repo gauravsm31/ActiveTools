@@ -64,12 +64,11 @@ class ProcessNotebookData(object):
         # Farm out audio files to Spark workers with a map
         print('got dataframe ..................................')
 
-        processed_rdd = (
-            files_urls_df
-            .rdd
-            .map(process_notebooks.ProcessEachNotebook)
-        )
+        processed_rdd = files_urls_df \
+                        .rdd \
+                        .map(process_notebooks.ProcessEachNotebook)
 
+        print('got processed rdd ..................................')
 
 
         processed_schema = StructType([StructField("notebook_id", StringType(), True),
