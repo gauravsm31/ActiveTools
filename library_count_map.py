@@ -9,7 +9,7 @@ from pyspark.sql.types import StructField
 import pyspark
 from pyspark.sql.types import StringType
 import boto3
-import libraryprocess
+#import libraryprocess
 
 
 class ProcessNotebookData(object):
@@ -54,18 +54,45 @@ class ProcessNotebookData(object):
         files_urls_df = self.spark.createDataFrame(url_list_rdd, url_list_schema)
         return files_urls_df
 
+    def ProcessEachFile(file_path):
+
+        file_name = os.path.basename(file_path)
+        notebook_id = os.path.splitext(file_name)[0]
+
+        lines = self.spark.read.text(file_path).rdd.map(lambda r: r[0])
+        ls = lines.map(lambda x: x) \
+        .filter(lambda x: 'import' in x) \
+        .map(lambda x: x.split(' ')) \
+        .map(lambda x: [x[i+1] for i in range(len(x)) if x[i]=='"import' or x[i]=='"from']) \
+        .map(lambda x: x[0].split('.')).map(lambda x: x[0].split('\\')) \
+        .map(lambda x: x[0]) \
+        .map(lambda x: (x,1)) \
+        .reduceByKey(lambda n,m: n+m) \
+        .map(lambda x: ('lib',1)) \
+        .reduceByKey(lambda n,m: n+m) \
+        .map(lambda x : (notebook_id,lib_count))
+
+
+        #lib_count = ls.count()
+
+        #self.spark.stop()
+
+        return ls
 
 
     def NotebookMapper(self, file_list):
 
-        files_urls_df = self.NotebookUrlListToDF(file_list)
+        #files_urls_df = self.NotebookUrlListToDF(file_list)
         # Farm out audio files to Spark workers with a map
-        print('got dataframe ..................................')
+        print('got file list ..................................')
 
-        process_notebooks = libraryprocess.ProcessNotebooks()
-        processed_rdd = files_urls_df \
-                        .rdd \
-                        .map(lambda x: process_notebooks.ProcessEachNotebook(x))
+        #process_notebooks = libraryprocess.ProcessNotebooks()
+        #processed_rdd = files_urls_df \
+        #                .rdd \
+        #                .map(lambda x: process_notebooks.ProcessEachNotebook(x))
+
+        for file in file_list:
+            processed_rdd = ProcessEachFile(file)
 
 
         thing = processed_rdd.collect()
