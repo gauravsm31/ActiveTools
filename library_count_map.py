@@ -78,7 +78,7 @@ class ProcessNotebookData(object):
 
         files_urls_df = self.NotebookUrlListToDF(file_list)
         # Farm out audio files to Spark workers with a map
-        processed__rdd = (
+        processed_rdd = (
             files_urls_df
             .rdd
             .map(self.ProcessEachNotebook)
@@ -91,7 +91,7 @@ class ProcessNotebookData(object):
             processed_rdd
             .map(lambda x: Row(x))
             .toDF(processed_schema)
-            )
+        )
 
         return processed_df
 
