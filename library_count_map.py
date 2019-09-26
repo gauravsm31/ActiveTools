@@ -10,6 +10,27 @@ import pyspark
 from pyspark.sql.types import StringType
 import boto3
 
+def ProcessEachNotebook(notebook_url_df_row):
+    file_path = notebook_url_df_row.url
+    file_name = os.path.basename(file_path)
+    notebook_id = os.path.splitext(file_name)[0]
+
+    lines = spark.read.text(file_path).rdd.map(lambda r: r[0])
+    ls = lines.map(lambda x: x) \
+    .filter(lambda x: 'import' in x) \
+    .map(lambda x: x.split(' ')) \
+    .map(lambda x: [x[i+1] for i in range(len(x)) if x[i]=='"import' or x[i]=='"from']) \
+    .map(lambda x: x[0].split('.')).map(lambda x: x[0].split('\\')) \
+    .map(lambda x: x[0]) \
+    .map(lambda x: (x,1)) \
+    .reduceByKey(lambda n,m: n+m) \
+    .map(lambda x: x[0])
+
+    lib_count = ls.count()
+
+    print(notebook_id,lib_count)
+
+    return (notebook_id,lib_count)
 
 class ProcessNotebookData(object):
 
@@ -47,29 +68,6 @@ class ProcessNotebookData(object):
         return file_list
 
 
-    def ProcessEachNotebook(self, notebook_url_df_row):
-        file_path = notebook_url_df_row.url
-        file_name = os.path.basename(file_path)
-        notebook_id = os.path.splitext(file_name)[0]
-
-        lines = spark.read.text(file_path).rdd.map(lambda r: r[0])
-        ls = lines.map(lambda x: x) \
-        .filter(lambda x: 'import' in x) \
-        .map(lambda x: x.split(' ')) \
-        .map(lambda x: [x[i+1] for i in range(len(x)) if x[i]=='"import' or x[i]=='"from']) \
-        .map(lambda x: x[0].split('.')).map(lambda x: x[0].split('\\')) \
-        .map(lambda x: x[0]) \
-        .map(lambda x: (x,1)) \
-        .reduceByKey(lambda n,m: n+m) \
-        .map(lambda x: x[0])
-
-        lib_count = ls.count()
-
-        print(notebook_id,lib_count)
-
-        return (notebook_id,lib_count)
-
-
     def NotebookUrlListToDF(self, file_list):
         url_list_schema = StructType([StructField("url", StringType(), True)])
         url_list_rdd = self.spark.sparkContext.parallelize(file_list).map(lambda x: Row(x))
@@ -83,7 +81,7 @@ class ProcessNotebookData(object):
         processed_rdd = (
             files_urls_df
             .rdd
-            .map(self.ProcessEachNotebook)
+            .map(lambda x: ProcessEachNotebook(x))
         )
 
         #processed_schema = StructType([StructField("notebook_id", StringType(), False),
