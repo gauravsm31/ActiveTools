@@ -9,6 +9,7 @@ from pyspark.sql.types import StructField
 import pyspark
 from pyspark.sql.types import StringType
 import boto3
+import library_process
 
 
 class ProcessNotebookData(object):
@@ -53,27 +54,6 @@ class ProcessNotebookData(object):
         files_urls_df = self.spark.createDataFrame(url_list_rdd, url_list_schema)
         return files_urls_df
 
-    def ProcessEachNotebook(self, notebook_url_df_row):
-        file_path = notebook_url_df_row.url
-        file_name = os.path.basename(file_path)
-        notebook_id = os.path.splitext(file_name)[0]
-
-        lines = self.spark.read.text(file_path).rdd.map(lambda r: r[0])
-        ls = lines.map(lambda x: x) \
-        .filter(lambda x: 'import' in x) \
-        .map(lambda x: x.split(' ')) \
-        .map(lambda x: [x[i+1] for i in range(len(x)) if x[i]=='"import' or x[i]=='"from']) \
-        .map(lambda x: x[0].split('.')).map(lambda x: x[0].split('\\')) \
-        .map(lambda x: x[0]) \
-        .map(lambda x: (x,1)) \
-        .reduceByKey(lambda n,m: n+m) \
-        .map(lambda x: x[0])
-
-        lib_count = ls.count()
-
-        print(notebook_id,lib_count)
-
-        return [notebook_id,lib_count]
 
 
     def NotebookMapper(self, file_list):
@@ -83,7 +63,7 @@ class ProcessNotebookData(object):
         processed_rdd = (
             files_urls_df
             .rdd
-            .map(lambda x: self.ProcessEachNotebook(x))
+            .map(library_process.ProcessEachNotebook)
         )
 
         #processed_schema = StructType([StructField("notebook_id", StringType(), False),
@@ -117,7 +97,7 @@ class ProcessNotebookData(object):
         print("Saving counts table into Postgres...")
         self.write_to_postgres(processed_df, "lib_counts")
 
-        spark.stop()
+        self.spark.stop()
 
 
 def main():
