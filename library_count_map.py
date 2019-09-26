@@ -94,21 +94,29 @@ class ProcessNotebookData(object):
             processed_schema = StructType([StructField("notebook_id", StringType(), True),
                                              StructField("lib_counts", StringType(), False  )])
 
+            print('got processed rdd ..................................')
+
             processed_df = processed_rdd \
                           .map(lambda x: Row(x)) \
                           .toDF(processed_schema) \
                           .select("notebook_id", "lib_counts") \
                           #.toDF(["notebook_id", "lib_counts"])
+            print('got processed df ..................................')
 
             self.write_to_postgres(processed_df, "lib_counts")
+
+            print('wrote to postgres ..................................')
 
         return
 
 
     def write_to_postgres(self, processed_df, table_name):
+        print('Writing in Postgres Func ..................................')
+
+        table = table_name
         mode = "append"
         connector = postgres.PostgresConnector()
-        connector.write(processed_df, table_name, mode)
+        connector.write(processed_df, table, mode)
 
 
     def run(self, notebooks_folder):
