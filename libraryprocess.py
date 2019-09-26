@@ -20,6 +20,9 @@ class ProcessNotebooks:
         file_name = os.path.basename(file_path)
         notebook_id = os.path.splitext(file_name)[0]
 
+        print("FILE PATH .............................................")
+        print(file_path)
+
         lines = self.spark.read.text(file_path).rdd.map(lambda r: r[0])
         ls = lines.map(lambda x: x) \
         .filter(lambda x: 'import' in x) \
