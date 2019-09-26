@@ -58,15 +58,14 @@ class ProcessNotebookData(object):
 
     def NotebookMapper(self, file_list):
 
-        process_notebooks = libraryprocess.ProcessNotebooks()
-
         files_urls_df = self.NotebookUrlListToDF(file_list)
         # Farm out audio files to Spark workers with a map
         print('got dataframe ..................................')
 
+        process_notebooks = libraryprocess.ProcessNotebooks()
         processed_rdd = files_urls_df \
                         .rdd \
-                        .map(process_notebooks.ProcessEachNotebook)
+                        .map(lambda x: process_notebooks.ProcessEachNotebook(x))
 
 
         thing = processed_rdd.collect()
