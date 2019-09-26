@@ -45,6 +45,27 @@ class ProcessNotebookData(object):
                 file_list.append(key['Key'])
             print("List count = " + str(len(file_list)))
         return file_list
+        
+
+    def ProcessEachNotebook(self, notebook_url_df_row):
+        file_path = notebook_url_df_row.url
+        file_name = os.path.basename(file_path)
+        notebook_id = os.path.splitext(file_name)[0]
+
+        lines = spark.read.text(file_path).rdd.map(lambda r: r[0])
+        ls = lines.map(lambda x: x) \
+        .filter(lambda x: 'import' in x) \
+        .map(lambda x: x.split(' ')) \
+        .map(lambda x: [x[i+1] for i in range(len(x)) if x[i]=='"import' or x[i]=='"from']) \
+        .map(lambda x: x[0].split('.')).map(lambda x: x[0].split('\\')) \
+        .map(lambda x: x[0]) \
+        .map(lambda x: (x,1)) \
+        .reduceByKey(lambda n,m: n+m) \
+        .map(lambda x: x[0])
+
+        lib_count = ls.count()
+
+        return (notebook_id,lib_count)
 
 
     def NotebookUrlListToDF(self, file_list):
@@ -79,27 +100,6 @@ class ProcessNotebookData(object):
         mode = "append"
         connector = postgres.PostgresConnector()
         connector.write(processed_df, table_name, mode)
-
-
-    def ProcessEachNotebook(self, notebook_url_df_row):
-        file_path = notebook_url_df_row.url
-        file_name = os.path.basename(file_path)
-        notebook_id = os.path.splitext(file_name)[0]
-
-        lines = spark.read.text(file_path).rdd.map(lambda r: r[0])
-        ls = lines.map(lambda x: x) \
-        .filter(lambda x: 'import' in x) \
-        .map(lambda x: x.split(' ')) \
-        .map(lambda x: [x[i+1] for i in range(len(x)) if x[i]=='"import' or x[i]=='"from']) \
-        .map(lambda x: x[0].split('.')).map(lambda x: x[0].split('\\')) \
-        .map(lambda x: x[0]) \
-        .map(lambda x: (x,1)) \
-        .reduceByKey(lambda n,m: n+m) \
-        .map(lambda x: x[0])
-
-        lib_count = ls.count()
-
-        return (notebook_id,lib_count)
 
 
     def run(self, notebooks_folder):
