@@ -3,7 +3,7 @@ import os
 from pyspark.sql import SparkSession
 from pyspark.sql import Row
 
-class library_process:
+class ProcessNotebooks:
     """
     Class handles methods related to library processing.
     """
