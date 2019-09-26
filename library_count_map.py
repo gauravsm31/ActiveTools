@@ -59,7 +59,7 @@ class ProcessNotebookData(object):
         file_name = os.path.basename(file_path)
         notebook_id = os.path.splitext(file_name)[0]
         print(notebook_id)
-        
+
         lines = self.spark.read.text(file_path).rdd.map(lambda r: r[0])
         ls = lines.map(lambda x: x) \
         .filter(lambda x: 'import' in x) \
@@ -71,7 +71,7 @@ class ProcessNotebookData(object):
         .reduceByKey(lambda n,m: n+m) \
         .map(lambda x: ('lib',1)) \
         .reduceByKey(lambda n,m: n+m) \
-        .map(lambda x : (notebook_id,x[0][1]))
+        .map(lambda x : (notebook_id,x[1]))
         #lib_count = ls.count()
         #self.spark.stop()
         return ls
