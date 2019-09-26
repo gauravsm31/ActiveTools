@@ -65,6 +65,8 @@ class ProcessNotebookData(object):
 
         lib_count = ls.count()
 
+        print(notebook_id,lib_count)
+
         return (notebook_id,lib_count)
 
 
@@ -84,7 +86,6 @@ class ProcessNotebookData(object):
             .map(self.ProcessEachNotebook)
         )
 
-        print(processed_rdd.collect())
         #processed_schema = StructType([StructField("notebook_id", StringType(), False),
         #                                     StructField("lib_counts", StringType(), False)])
 
