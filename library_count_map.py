@@ -5,8 +5,8 @@ from pyspark.sql import SparkSession
 from pyspark.sql import Row
 import os
 from pyspark.sql.types import StructType
-
-
+from pyspark.sql.types import StructField
+import pyspark
 from pyspark.sql.types import StringType
 import boto3
 
