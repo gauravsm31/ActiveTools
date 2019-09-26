@@ -4,6 +4,7 @@ import sys
 from pyspark.sql import SparkSession
 from pyspark.sql import Row
 import os
+from pyspark.sql.types import StructType
 
 
 from pyspark.sql.types import StringType
