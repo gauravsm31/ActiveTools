@@ -63,7 +63,6 @@ class ProcessNotebookData(object):
         files_urls_df = self.NotebookUrlListToDF(file_list)
         # Farm out audio files to Spark workers with a map
         print('got dataframe ..................................')
-        files_urls_df.show(3)
 
         processed_rdd = files_urls_df \
                         .rdd \
@@ -100,10 +99,6 @@ class ProcessNotebookData(object):
 
         print("batch_run_folder: ", notebooks_folder)
         file_list = self.getNotebookFileLocations()
-
-        print("In Run ......................................")
-        for item in file_list:
-            print(item)
 
         print("Sending files to process...")
         processed_df = self.NotebookMapper(file_list)
