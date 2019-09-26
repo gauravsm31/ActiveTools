@@ -97,6 +97,7 @@ class ProcessNotebookData(object):
         print("batch_run_folder: ", notebooks_folder)
         file_list = self.getNotebookFileLocations()
 
+        print("In Run ......................................")
         for item in file_list:
             print(item)
 
