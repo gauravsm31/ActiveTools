@@ -97,6 +97,9 @@ class ProcessNotebookData(object):
         print("batch_run_folder: ", notebooks_folder)
         file_list = self.getNotebookFileLocations()
 
+        for item in file_list:
+            print(item)
+
         print("Sending files to process...")
         processed_df = self.NotebookMapper(file_list)
 
