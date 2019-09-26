@@ -74,13 +74,13 @@ class ProcessNotebookData(object):
         processed_schema = StructType([StructField("notebook_id", StringType(), True),
                                              StructField("lib_counts", StringType(), False  )])
 
-        processed_df = (
-            processed_rdd
-            .map(lambda x: Row(x))
-            .toDF(processed_schema)
-            .select("notebook_id", "lib_counts")
+        processed_df = processed_rdd \
+                      .map(lambda x: Row(x)) \
+                      .toDF(processed_schema) \
+                      .select("notebook_id", "lib_counts") \
             #.toDF(["notebook_id", "lib_counts"])
-        )
+
+        print('got processed dataframe ..................................')
 
         return processed_df
 
