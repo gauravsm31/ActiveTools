@@ -103,6 +103,8 @@ class ProcessNotebookData(object):
                           #.toDF(["notebook_id", "lib_counts"])
             print('got processed df ..................................')
 
+            df.show(1)
+
             self.write_to_postgres(processed_df, "lib_counts")
 
             print('wrote to postgres ..................................')
