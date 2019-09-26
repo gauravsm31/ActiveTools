@@ -84,18 +84,17 @@ class ProcessNotebookData(object):
             .map(self.ProcessEachNotebook)
         )
 
+        print(processed_rdd.collect())
         #processed_schema = StructType([StructField("notebook_id", StringType(), False),
         #                                     StructField("lib_counts", StringType(), False)])
 
         processed_df = (
             processed_rdd
-            .map(lambda x: [x[0],x[1]]).collect()
+            .map(lambda x: [x[0],x[1]])
             #.toDF(processed_schema)
             #.select("notebook_id", "lib_counts")
-            #.toDF(["notebook_id", "lib_counts"])
+            .toDF(["notebook_id", "lib_counts"])
         )
-
-        print(processed_df)
 
         return processed_df
 
