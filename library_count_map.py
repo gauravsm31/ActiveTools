@@ -58,7 +58,7 @@ class ProcessNotebookData(object):
 
     def NotebookMapper(self, file_list):
 
-        process_notebooks = libraryprocess.ProcessNotebooks(self.spark)
+        process_notebooks = libraryprocess.ProcessNotebooks()
 
         files_urls_df = self.NotebookUrlListToDF(file_list)
         # Farm out audio files to Spark workers with a map

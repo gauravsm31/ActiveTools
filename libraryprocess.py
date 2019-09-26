@@ -8,15 +8,13 @@ class ProcessNotebooks:
     Class handles methods related to library processing.
     """
 
-    def __init__(self, spark_session):
-        self.spark = spark_session
+    def __init__(self):
+        self.spark = SparkSession \
+            .builder \
+            .appName("LibraryInsights") \
+            .getOrCreate()
 
     def ProcessEachNotebook(self, notebook_url_df_row):
-
-        #self.spark = SparkSession\
-        #    .builder\
-        #    .appName("LibraryProcess")\
-        #    .getOrCreate()
 
         file_path = notebook_url_df_row.url
         file_name = os.path.basename(file_path)
