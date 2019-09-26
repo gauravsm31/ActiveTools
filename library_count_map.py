@@ -63,17 +63,14 @@ class ProcessNotebookData(object):
         files_urls_df = self.NotebookUrlListToDF(file_list)
         # Farm out audio files to Spark workers with a map
         print('got dataframe ..................................')
+        thing = files_urls_df.limit(10).select("url").as[String].collect()
+        print(thing)
 
         processed_rdd = files_urls_df \
                         .rdd \
                         .map(process_notebooks.ProcessEachNotebook)
 
         print('got processed rdd ..................................')
-
-        things = processed_rdd.collect()
-        for thing in things:
-            print(thing)
-
 
         processed_schema = StructType([StructField("notebook_id", StringType(), True),
                                              StructField("lib_counts", StringType(), False  )])
