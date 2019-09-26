@@ -16,6 +16,8 @@ class ProcessNotebooks(object):
 
     def ProcessEachNotebook(self, notebook_url_df_row):
 
+        print("Processing One Notebook..................................")
+
         file_path = notebook_url_df_row.url
         file_name = os.path.basename(file_path)
         notebook_id = os.path.splitext(file_name)[0]
