@@ -85,6 +85,8 @@ class ProcessNotebookData(object):
         #self.spark.stop()
         return (notebook_id,str(1))
 
+    def dummy(self, file_path):
+        return (nb_1234,str(1))
 
     def NotebookMapper(self, file_list):
 
@@ -93,7 +95,7 @@ class ProcessNotebookData(object):
         files_urls_df.show()
         print('got file list ..................................')
 
-        processed_rdd = files_urls_df.rdd.map(lambda x: x[0].show())
+        processed_rdd = files_urls_df.rdd.map(self.dummy)
 
         # for file in file_list:
         #
