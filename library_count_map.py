@@ -83,7 +83,7 @@ class ProcessNotebookData(object):
         # .map(lambda x : (notebook_id,x[1]))
         #lib_count = ls.count()
         #self.spark.stop()
-        return (str(notebook_id),str(1))
+        return (notebook_id,str(1))
 
 
     def NotebookMapper(self, file_list):
@@ -93,7 +93,7 @@ class ProcessNotebookData(object):
         files_urls_df.show()
         print('got file list ..................................')
 
-        processed_rdd = files_urls_df.rdd.map(self.ProcessEachFile)
+        processed_rdd = files_urls_df.rdd.map(lanbda x: self.ProcessEachFile(x[0]))
 
         # for file in file_list:
         #
@@ -136,7 +136,7 @@ class ProcessNotebookData(object):
 
         processed_df = (
             processed_rdd \
-            .map(lambda x: Row(x)) \
+            .map(lambda x: [x[0],x[1]]) \
             .toDF(processed_schema) \
             .select("notebook_id", "lib_counts")
             #.toDF(["notebook_id", "lib_counts"])
