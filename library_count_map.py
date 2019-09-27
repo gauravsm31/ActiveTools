@@ -61,8 +61,10 @@ class ProcessNotebookData(object):
 
     def ProcessEachFile(self, file_path):
 
+        print("In process each file.....................")
+
         file_path = file_path.collect()[0]
-        print("Printing file path for each file processing: %s" %file_path)
+        print("Printing file path for each file processing: %s .........................." %file_path)
         file_name = os.path.basename(file_path)
         notebook_id = os.path.splitext(file_name)[0]
         print(notebook_id)
@@ -92,7 +94,7 @@ class ProcessNotebookData(object):
 
         processed_rdd = files_urls_df \
                         .rdd \
-                        .map(lambda x: self.ProcessEachFile(x))
+                        .map(self.ProcessEachFile)
 
         # for file in file_list:
         #
