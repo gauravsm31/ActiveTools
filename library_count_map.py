@@ -81,10 +81,11 @@ class ProcessNotebookData(object):
         .map(lambda x: ('lib',1)) \
         .reduceByKey(lambda n,m: n+m) \
         .map(lambda x : (notebook_id,x[1]))
-        lib_count = ls.count()
+        #lib_count = ls.count()
         #self.spark.stop()
-        return (notebook_id,lib_count)
+        return ls
 
+        
     def NotebookMapper(self, file_list):
 
         #process_obj = ProcessNotebooks()
@@ -104,10 +105,10 @@ class ProcessNotebookData(object):
 
             print('got processed rdd ..................................')
 
-            #test = processed_rdd.collect()
+            test = processed_rdd.collect()
 
-            #for item in test:
-            #    print(test)
+            for item in test:
+                print(test)
 
             processed_df = processed_rdd \
                            .map(lambda x: [x[0],x[1]]) \
