@@ -91,7 +91,7 @@ class ProcessNotebookData(object):
         for file in file_list:
             processed_rdd = self.ProcessEachFile(file)
 
-            processed_schema = StructType([StructField("notebook_id", StringType(), True),
+            processed_schema = StructType([StructField("notebook_id", StringType(), False),
                                              StructField("lib_counts", StringType(), False  )])
 
             print('got processed rdd ..................................')
