@@ -93,7 +93,7 @@ class ProcessNotebookData(object):
         files_urls_df.show()
         print('got file list ..................................')
 
-        processed_rdd = files_urls_df.rdd.map(lambda x: print(x[0]))
+        processed_rdd = files_urls_df.rdd.map(lambda x: x[0].show())
 
         # for file in file_list:
         #
