@@ -83,7 +83,7 @@ class ProcessNotebookData(object):
         # .map(lambda x : (notebook_id,x[1]))
         #lib_count = ls.count()
         #self.spark.stop()
-        return (notebook_id,1)
+        return (str(notebook_id),str(1))
 
 
     def NotebookMapper(self, file_list):
