@@ -9,7 +9,7 @@ from pyspark.sql.types import StructField
 import pyspark
 from pyspark.sql.types import StringType
 import boto3
-from libraryprocess import ProcessNotebooks
+from lib_count_process import ProcessNotebooks
 
 
 class ProcessNotebookData(object):
