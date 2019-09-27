@@ -94,8 +94,7 @@ class ProcessNotebookData(object):
         print('got file list ..................................')
 
         processed_rdd = (
-            files_urls_df \
-            .rdd \
+            files_urls_df.rdd \
             .map(self.ProcessEachFile)
         )
 
