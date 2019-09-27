@@ -61,6 +61,7 @@ class ProcessNotebookData(object):
 
     def ProcessEachFile(self, file_path):
 
+        file_path = file_path.collect()[0]
         file_name = os.path.basename(file_path)
         notebook_id = os.path.splitext(file_name)[0]
         print(notebook_id)
@@ -88,10 +89,10 @@ class ProcessNotebookData(object):
         # Farm out audio files to Spark workers with a map
         print('got file list ..................................')
 
-        #process_notebooks = libraryprocess.ProcessNotebooks()
-        #processed_rdd = files_urls_df \
-        #                .rdd \
-        #                .map(lambda x: process_notebooks.ProcessEachNotebook(x))
+        process_notebooks = libraryprocess.ProcessNotebooks()
+        processed_rdd = files_urls_df \
+                        .rdd \
+                        .map(lambda x: ProcessEachFile(x))
 
         for file in file_list:
 
