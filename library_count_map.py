@@ -89,6 +89,7 @@ class ProcessNotebookData(object):
         #                .map(lambda x: process_notebooks.ProcessEachNotebook(x))
 
         for file in file_list:
+
             processed_rdd = self.ProcessEachFile(file)
 
             processed_schema = StructType([StructField("notebook_id", StringType(), False),
@@ -99,7 +100,7 @@ class ProcessNotebookData(object):
             processed_df = processed_rdd \
                           .map(lambda x: Row(x)) \
                           .toDF(processed_schema) \
-                          .select("notebook_id", "lib_counts") \
+                          .select("notebook_id", "lib_counts")
                           #.toDF(["notebook_id", "lib_counts"])
             print('got processed df ..................................')
 
