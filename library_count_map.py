@@ -73,7 +73,7 @@ class ProcessNotebookData(object):
         import_lines = lines.map(lambda x: x) \
         .filter(lambda x: 'import' in x) \
 
-        if import_lines.head(1).isEmpty:
+        if import_lines.take(1).length == 0:
             finalRDD = import_lines.map(lambda x: (notebook_id,0))
 
         else:
@@ -86,8 +86,7 @@ class ProcessNotebookData(object):
             .map(lambda x: ('lib',1)) \
             .reduceByKey(lambda n,m: n+m) \
             .map(lambda x : (notebook_id,x[1]))
-        #lib_count = ls.count()
-        #self.spark.stop()
+
         return finalRDD
 
 
