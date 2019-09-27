@@ -93,10 +93,7 @@ class ProcessNotebookData(object):
         files_urls_df.show()
         print('got file list ..................................')
 
-        processed_rdd = (
-            files_urls_df.rdd \
-            .map(self.ProcessEachFile)
-        )
+        processed_rdd = files_urls_df.rdd.map(self.ProcessEachFile)
 
         # for file in file_list:
         #
