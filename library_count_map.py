@@ -61,97 +61,94 @@ class ProcessNotebookData(object):
 
     def ProcessEachFile(self, file_path):
 
-        file_path = str(file_path.url)
-        print("In process each file.....................")
+        #file_path = str(file_path.url)
+        #print("In process each file.....................")
 
-        print("Printing file path for each file processing: %s .........................." %file_path)
+        #print("Printing file path for each file processing: %s .........................." %file_path)
         file_name = os.path.basename(file_path)
         notebook_id = os.path.splitext(file_name)[0]
         print(notebook_id)
 
-        # lines = self.spark.read.text(file_path).rdd.map(lambda r: r[0])
-        # ls = lines.map(lambda x: x) \
-        # .filter(lambda x: 'import' in x) \
-        # .map(lambda x: x.split(' ')) \
-        # .map(lambda x: [x[i+1] for i in range(len(x)) if x[i]=='"import' or x[i]=='"from']) \
-        # .map(lambda x: x[0].split('.')).map(lambda x: x[0].split('\\')) \
-        # .map(lambda x: x[0]) \
-        # .map(lambda x: (x,1)) \
-        # .reduceByKey(lambda n,m: n+m) \
-        # .map(lambda x: ('lib',1)) \
-        # .reduceByKey(lambda n,m: n+m) \
-        # .map(lambda x : (notebook_id,x[1]))
-        #lib_count = ls.count()
+        lines = self.spark.read.text(file_path).rdd.map(lambda r: r[0])
+        ls = lines.map(lambda x: x) \
+        .filter(lambda x: 'import' in x) \
+        .map(lambda x: x.split(' ')) \
+        .map(lambda x: [x[i+1] for i in range(len(x)) if x[i]=='"import' or x[i]=='"from']) \
+        .map(lambda x: x[0].split('.')).map(lambda x: x[0].split('\\')) \
+        .map(lambda x: x[0]) \
+        .map(lambda x: (x,1)) \
+        .reduceByKey(lambda n,m: n+m) \
+        .map(lambda x: ('lib',1)) \
+        .reduceByKey(lambda n,m: n+m) \
+        .map(lambda x : (notebook_id,x[1]))
+        lib_count = ls.count()
         #self.spark.stop()
-        return (notebook_id,str(1))
-
-    def dummy(self, file_path):
-        return (nb_1234,str(1))
+        return (notebook_id,lib_count)
 
     def NotebookMapper(self, file_list):
 
-        process_obj = ProcessNotebooks()
+        #process_obj = ProcessNotebooks()
         #files_urls_df = self.NotebookUrlListToDF(file_list)
         # Farm out audio files to Spark workers with a map
         #files_urls_df.show()
         print('got file list ..................................')
 
-        processed_rdd = self.spark.sparkContext.parallelize(file_list).map(lambda x: Row(x)).map(process_obj.ProcessEachNotebook)
+        #processed_rdd = self.spark.sparkContext.parallelize(file_list).map(lambda x: Row(x)).map(process_obj.ProcessEachNotebook)
 
-        # for file in file_list:
-        #
-        #     processed_rdd = self.ProcessEachFile(file)
-        #
-        #     processed_schema = StructType([StructField("notebook_id", StringType(), False),
-        #                                      StructField("lib_counts", StringType(), False )])
-        #
-        #     print('got processed rdd ..................................')
-        #
-        #     test = processed_rdd.collect()
-        #
-        #     for item in test:
-        #         print(test)
-        #
-        #     processed_df = processed_rdd \
-        #                    .map(lambda x: [x[0],x[1]]) \
-        #                    .toDF(processed_schema) \
-        #                    .select("notebook_id", "lib_counts")
-        #                    #.toDF(["notebook_id", "lib_counts"])
-        #
-        #
-        #     print('got processed df ..................................')
-        #
-        #     processed_df.show()
-        #
-        #     self.write_to_postgres(processed_df, "lib_counts")
-        #
-        #     print('wrote to postgres ..................................')
+        for file in file_list:
 
-        processed_schema = StructType([StructField("notebook_id", StringType(), False),
-                                         StructField("lib_counts", StringType(), False )])
+            processed_rdd = self.ProcessEachFile(file)
 
-        print('got processed rdd ..................................')
+            processed_schema = StructType([StructField("notebook_id", StringType(), False),
+                                             StructField("lib_counts", StringType(), False )])
 
-        #test = processed_rdd.collect()
+            print('got processed rdd ..................................')
 
-        # for item in test:
-        #     print(test)
+            test = processed_rdd.collect()
 
-        processed_df = (
-            processed_rdd \
-            .map(lambda x: [x[0],x[1]]) \
-            .toDF(processed_schema) \
-            .select("notebook_id", "lib_counts")
-            #.toDF(["notebook_id", "lib_counts"])
-        )
+            for item in test:
+                print(test)
 
-        print('got processed df ..................................')
+            processed_df = processed_rdd \
+                           .map(lambda x: [x[0],x[1]]) \
+                           .toDF(processed_schema) \
+                           .select("notebook_id", "lib_counts")
+                           #.toDF(["notebook_id", "lib_counts"])
 
-        processed_df.show()
 
-        self.write_to_postgres(processed_df, "lib_counts")
+            print('got processed df ..................................')
 
-        print('wrote to postgres ..................................')
+            processed_df.show()
+
+            self.write_to_postgres(processed_df, "lib_counts")
+
+            print('wrote to postgres ..................................')
+
+        # processed_schema = StructType([StructField("notebook_id", StringType(), False),
+        #                                  StructField("lib_counts", StringType(), False )])
+        #
+        # print('got processed rdd ..................................')
+        #
+        # #test = processed_rdd.collect()
+        #
+        # # for item in test:
+        # #     print(test)
+        #
+        # processed_df = (
+        #     processed_rdd \
+        #     .map(lambda x: [x[0],x[1]]) \
+        #     .toDF(processed_schema) \
+        #     .select("notebook_id", "lib_counts")
+        #     #.toDF(["notebook_id", "lib_counts"])
+        # )
+        #
+        # print('got processed df ..................................')
+        #
+        # processed_df.show()
+        #
+        # self.write_to_postgres(processed_df, "lib_counts")
+        #
+        # print('wrote to postgres ..................................')
 
         return
 
