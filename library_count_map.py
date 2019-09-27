@@ -77,8 +77,7 @@ class ProcessNotebookData(object):
             finalRDD = import_lines.map(lambda x: (notebook_id,0))
 
         else:
-            finalRDD = import_lines. \
-            .map(lambda x: x.split(' ')) \
+            finalRDD = import_lines.map(lambda x: x.split(' ')) \
             .map(lambda x: [x[i+1] for i in range(len(x)) if x[i]=='"import' or x[i]=='"from']) \
             .map(lambda x: x[0].split('.')).map(lambda x: x[0].split('\\')) \
             .map(lambda x: x[0]) \
