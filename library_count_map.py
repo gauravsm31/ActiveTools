@@ -151,7 +151,7 @@ class ProcessNotebookData(object):
 
 
 def main():
-    notebooks_folder = "sample_data/data/notebooks/"
+    notebooks_folder = "sample_data/data/test_notebooks/"
     proc = ProcessNotebookData(notebooks_folder)
     proc.run(notebooks_folder)
 
