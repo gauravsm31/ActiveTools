@@ -95,7 +95,7 @@ class ProcessNotebookData(object):
         #files_urls_df.show()
         print('got file list ..................................')
 
-        processed_rdd = self.spark.sparkContext.parallelize(file_list).map(self.dummy)
+        processed_rdd = self.spark.sparkContext.parallelize(file_list).map(lambda x: Row(x)).map(self.dummy)
 
         # for file in file_list:
         #
