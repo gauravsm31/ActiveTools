@@ -94,34 +94,59 @@ class ProcessNotebookData(object):
                         .rdd \
                         .map(lambda x: ProcessEachFile(x))
 
-        for file in file_list:
+        # for file in file_list:
+        #
+        #     processed_rdd = self.ProcessEachFile(file)
+        #
+        #     processed_schema = StructType([StructField("notebook_id", StringType(), False),
+        #                                      StructField("lib_counts", StringType(), False )])
+        #
+        #     print('got processed rdd ..................................')
+        #
+        #     test = processed_rdd.collect()
+        #
+        #     for item in test:
+        #         print(test)
+        #
+        #     processed_df = processed_rdd \
+        #                    .map(lambda x: [x[0],x[1]]) \
+        #                    .toDF(processed_schema) \
+        #                    .select("notebook_id", "lib_counts")
+        #                    #.toDF(["notebook_id", "lib_counts"])
+        #
+        #
+        #     print('got processed df ..................................')
+        #
+        #     processed_df.show()
+        #
+        #     self.write_to_postgres(processed_df, "lib_counts")
+        #
+        #     print('wrote to postgres ..................................')
 
-            processed_rdd = self.ProcessEachFile(file)
+        processed_schema = StructType([StructField("notebook_id", StringType(), False),
+                                         StructField("lib_counts", StringType(), False )])
 
-            processed_schema = StructType([StructField("notebook_id", StringType(), False),
-                                             StructField("lib_counts", StringType(), False )])
+        print('got processed rdd ..................................')
 
-            print('got processed rdd ..................................')
+        test = processed_rdd.collect()
 
-            test = processed_rdd.collect()
+        for item in test:
+            print(test)
 
-            for item in test:
-                print(test)
-
-            processed_df = processed_rdd \
-                           .map(lambda x: [x[0],x[1]]) \
-                           .toDF(processed_schema) \
-                           .select("notebook_id", "lib_counts")
-                           #.toDF(["notebook_id", "lib_counts"])
+        processed_df = processed_rdd \
+                       .map(lambda x: [x[0],x[1]]) \
+                       .toDF(processed_schema) \
+                       .select("notebook_id", "lib_counts")
+                       #.toDF(["notebook_id", "lib_counts"])
 
 
-            print('got processed df ..................................')
+        print('got processed df ..................................')
 
-            processed_df.show()
+        processed_df.show()
 
-            self.write_to_postgres(processed_df, "lib_counts")
+        self.write_to_postgres(processed_df, "lib_counts")
 
-            print('wrote to postgres ..................................')
+        print('wrote to postgres ..................................')
 
         return
 
