@@ -103,10 +103,11 @@ class ProcessNotebookData(object):
                 print(test)
 
             processed_df = processed_rdd \
-                          .map(lambda x: Row(x)) \
-                          .toDF(processed_schema) \
-                          .select("notebook_id", "lib_counts")
-                          #.toDF(["notebook_id", "lib_counts"])
+                           .map(lambda x: Row(x)) \
+                           #.toDF(processed_schema) \
+                           #.select("notebook_id", "lib_counts")
+                           .toDF(["notebook_id", "lib_counts"])
+                           
             print('got processed df ..................................')
 
             processed_df.show(n=1)
