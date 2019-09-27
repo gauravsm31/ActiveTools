@@ -97,6 +97,8 @@ class ProcessNotebookData(object):
 
             print('got processed rdd ..................................')
 
+            test = processed_rdd.collect()
+
             processed_df = processed_rdd \
                           .map(lambda x: Row(x)) \
                           .toDF(processed_schema) \
