@@ -129,7 +129,7 @@ class ProcessNotebookData(object):
 
         print('got processed rdd ..................................')
 
-        test = processed_rdd.collect()
+        #test = processed_rdd.collect()
 
         for item in test:
             print(test)
