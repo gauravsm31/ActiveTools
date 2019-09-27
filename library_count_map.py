@@ -131,8 +131,8 @@ class ProcessNotebookData(object):
 
         #test = processed_rdd.collect()
 
-        for item in test:
-            print(test)
+        # for item in test:
+        #     print(test)
 
         processed_df = (
             processed_rdd \
