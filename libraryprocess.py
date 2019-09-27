@@ -1,12 +1,13 @@
 import boto3
 import os
-from pyspark.sql import SparkSession
-from pyspark.sql import Row
 
 class ProcessNotebooks:
     """
     Class handles methods related to library processing.
     """
+
+    def __init__(self):
+        self.dummy = 'dummy'
 
     def ProcessEachNotebook(self, notebook_url_df_row):
 
