@@ -111,7 +111,7 @@ class ProcessNotebookData(object):
 
             print('got processed df ..................................')
 
-            processed_df.show(n=1)
+            processed_df.show()
 
             self.write_to_postgres(processed_df, "lib_counts")
 
