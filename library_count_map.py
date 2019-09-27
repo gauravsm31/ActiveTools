@@ -36,6 +36,7 @@ class ProcessNotebookData(object):
 
         file_list = []
         for key in s3_result['Contents']:
+            print(key['Key'])
             file_list.append("s3a://" + bucket_name + "/" + key['Key'])
         print("List count = " + str(len(file_list)))
 
@@ -146,7 +147,7 @@ class ProcessNotebookData(object):
 
 
 def main():
-    notebooks_folder = "sample_data/data/notebooks"
+    notebooks_folder = "sample_data/data/notebooks/"
     proc = ProcessNotebookData(notebooks_folder)
     proc.run(notebooks_folder)
 
