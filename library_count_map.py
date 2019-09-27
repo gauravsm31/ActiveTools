@@ -61,9 +61,9 @@ class ProcessNotebookData(object):
 
     def ProcessEachFile(self, file_path):
 
+        file_path = str(file_path.url)
         print("In process each file.....................")
 
-        file_path = file_path.collect()[0]
         print("Printing file path for each file processing: %s .........................." %file_path)
         file_name = os.path.basename(file_path)
         notebook_id = os.path.splitext(file_name)[0]
@@ -90,11 +90,14 @@ class ProcessNotebookData(object):
 
         files_urls_df = self.NotebookUrlListToDF(file_list)
         # Farm out audio files to Spark workers with a map
+        files_urls_df.show()
         print('got file list ..................................')
 
-        processed_rdd = files_urls_df \
-                        .rdd \
-                        .map(self.ProcessEachFile)
+        processed_rdd = (
+            files_urls_df \
+            .rdd \
+            .map(self.ProcessEachFile)
+        )
 
         # for file in file_list:
         #
@@ -135,12 +138,13 @@ class ProcessNotebookData(object):
         for item in test:
             print(test)
 
-        processed_df = processed_rdd \
-                       .map(lambda x: [x[0],x[1]]) \
-                       .toDF(processed_schema) \
-                       .select("notebook_id", "lib_counts")
-                       #.toDF(["notebook_id", "lib_counts"])
-
+        processed_df = (
+            processed_rdd \
+            .map(lambda x: [x[0],x[1]]) \
+            .toDF(processed_schema) \
+            .select("notebook_id", "lib_counts")
+            #.toDF(["notebook_id", "lib_counts"])
+        )
 
         print('got processed df ..................................')
 
