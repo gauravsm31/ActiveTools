@@ -73,7 +73,7 @@ class ProcessNotebookData(object):
         import_lines = lines.map(lambda x: x) \
         .filter(lambda x: 'import' in x) \
 
-        if import_lines.take(1).length == 0:
+        if import_lines.isEmpty():
             finalRDD = import_lines.map(lambda x: (notebook_id,0))
 
         else:
