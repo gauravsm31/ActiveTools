@@ -9,7 +9,7 @@ from pyspark.sql.types import StructField
 import pyspark
 from pyspark.sql.types import StringType
 import boto3
-import libraryprocess
+from libraryprocess import ProcessNotebooks
 
 
 class ProcessNotebookData(object):
@@ -90,7 +90,7 @@ class ProcessNotebookData(object):
 
     def NotebookMapper(self, file_list):
 
-        process_obj = libraryprocess.ProcessNotebooks()
+        process_obj = ProcessNotebooks()
         #files_urls_df = self.NotebookUrlListToDF(file_list)
         # Farm out audio files to Spark workers with a map
         #files_urls_df.show()
