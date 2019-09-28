@@ -70,16 +70,14 @@ class ProcessNotebookData(object):
         files_urls_df.show()
         print('got file df ..................................')
 
-        #NewRDD = files_urls_df.rdd.map(list)
+        NewRDD = files_urls_df.rdd.map(list)
 
-        # test = NewRDD.collect()
-        #
-        # for item in test:
-        #     print(item)
+        test = NewRDD.collect()
 
-        #processed_rdd = NewRDD.map(ProcessEachFile)
+        for item in test:
+            print(item)
 
-        processed_rdd = files_urls_df.rdd.map(ProcessEachFile)
+        processed_rdd = NewRDD.map(ProcessEachFile)
 
         processed_schema = StructType([StructField("notebook_id", StringType(), False),
                                          StructField("lib_counts", StringType(), False )])
@@ -132,20 +130,15 @@ class ProcessNotebookData(object):
 
         #self.spark.stop()
 
-def ProcessEachFile(df_row):
+def ProcessEachFile(file_path):
 
-    file_path = df_row.url
-    #file_path = file_path[0][1:]
+    file_path = file_path[0].encode("utf-8")
     # strip off the starting s3n:// from the bucket
     current_bucket = os.path.dirname(str(file_path))[6:]
     file_name = os.path.basename(str(file_path))
-    local_file_name = os.path.basename(str(file_path))
     notebook_id = os.path.splitext(file_name)[0]
 
-    s3_res = boto3.resource('s3')
-    s3_res.Bucket(current_bucket).download_file(file_name,local_file_name)
-
-    with open(local_file_name) as f:
+    with open(file_path) as f:
         if 'import' in f.read():
             return (notebook_id,str(1))
         else:
