@@ -125,7 +125,7 @@ class ProcessNotebookData(object):
 
         #self.spark.stop()
 
-def ProcessEachFile(self, file_path):
+def ProcessEachFile(file_path):
     return file_path
 
 
