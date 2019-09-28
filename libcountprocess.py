@@ -3,6 +3,9 @@ import os
 
 class ProcessNotebooks(object):
 
+    def __init__(self):
+        self.project_name = 'databeam'
+
     def ProcessEachNotebook(self, notebook_url_df_row):
 
         # print("Processing One Notebook..................................")
