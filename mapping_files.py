@@ -87,7 +87,7 @@ class ProcessNotebookData(object):
         fpaths = processed_rdd.collect()
 
         for path in fpaths:
-            print(path)    
+            print("first word in file is: %s ..........................................................................." %path)
 
         # processed_df = (
         #     processed_rdd \
@@ -144,7 +144,8 @@ def ProcessEachFile(file_path):
     #     .appName("PythonSort")\
     #     .getOrCreate()
     #
-    # lines = spark.read.text(file_path).rdd.map(lambda r: r[0])
+    lines = spark.read.text(file_path).rdd.map(lambda r: r[0])
+    word = lines.map(lambda x: x[0])
     # ls = lines.map(lambda x: x) \
     # .filter(lambda x: 'import' in x) \
     # .map(lambda x: x.split(' ')) \
@@ -160,7 +161,7 @@ def ProcessEachFile(file_path):
     #
     # spark.stop()
 
-    return (file_path)
+    return (word)
 
 
 def main():
