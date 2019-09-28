@@ -139,7 +139,7 @@ def ProcessEachFile(file_path):
     file_name = os.path.basename(str(file_path))
     notebook_id = os.path.splitext(file_name)[0]
 
-    s3_res = boto.resource('s3')
+    s3_res = boto3.resource('s3')
     s3_res.Bucket(current_bucket).download_file(key,file_name)
 
     with open(file_name) as f:
