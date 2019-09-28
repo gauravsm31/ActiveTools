@@ -5,14 +5,14 @@ class ProcessNotebooks(object):
 
     def ProcessEachNotebook(self, notebook_url_df_row):
 
-        print("Processing One Notebook..................................")
-
-        file_path = notebook_url_df_row.url
-        file_name = os.path.basename(file_path)
-        notebook_id = os.path.splitext(file_name)[0]
-
-        print("FILE PATH .............................................")
-        print(file_path)
+        # print("Processing One Notebook..................................")
+        #
+        # file_path = notebook_url_df_row.url
+        # file_name = os.path.basename(file_path)
+        # notebook_id = os.path.splitext(file_name)[0]
+        #
+        # print("FILE PATH .............................................")
+        # print(file_path)
 
         # lines = self.spark.read.text(file_path).rdd.map(lambda r: r[0])
         # ls = lines.map(lambda x: x) \
@@ -29,4 +29,5 @@ class ProcessNotebooks(object):
 
         #self.spark.stop()
 
-        return (notebook_id,str(1))
+        # return (notebook_id,str(1))
+        return notebook_url_df_row

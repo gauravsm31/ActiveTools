@@ -65,14 +65,14 @@ class ProcessNotebookData(object):
 
     def NotebookMapper(self, file_list):
 
-        #process_obj = ProcessNotebooks()
+        process_obj = ProcessNotebooks()
         files_urls_df = self.NotebookUrlListToDF(file_list)
         # Farm out audio files to Spark workers with a map
         files_urls_df.show()
         print('got file df ..................................')
 
         NewRDD = files_urls_df.rdd.map(list)
-        processed_rdd = NewRDD.map(self.ProcessEachFile)
+        processed_rdd = NewRDD.map(process_obj.ProcessEachFile)
 
         processed_schema = StructType([StructField("notebook_id", StringType(), False),
                                          StructField("lib_counts", StringType(), False )])
