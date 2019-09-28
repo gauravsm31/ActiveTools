@@ -87,7 +87,7 @@ class ProcessNotebookData(object):
         fpaths = processed_rdd.collect()
 
         for (path,num) in fpaths:
-            print("notebook/path exists: %s %s ..........................................................................." %path %num)
+            print("notebook/path exists: %s %s ..........................................................................." %(path,num))
 
         # processed_df = (
         #     processed_rdd \
