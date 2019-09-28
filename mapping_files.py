@@ -139,9 +139,13 @@ def ProcessEachFile(df_row):
     # strip off the starting s3n:// from the bucket
     current_bucket = os.path.dirname(str(file_path))[6:]
     file_name = os.path.basename(str(file_path))
+    local_file_name = os.path.basename(str(file_path))
     notebook_id = os.path.splitext(file_name)[0]
 
-    with open(file_path) as f:
+    s3_res = boto3.resource('s3')
+    s3_res.Bucket(current_bucket).download_file(file_name,local_file_name)
+
+    with open(local_file_name) as f:
         if 'import' in f.read():
             return (notebook_id,str(1))
         else:
