@@ -127,9 +127,9 @@ class ProcessNotebookData(object):
 
 def ProcessEachFile(file_path):
 
-    file_path_list = file_path.collect()[0]
+    #file_path_list = file_path.collect()[0]
 
-    file_name = os.path.basename(file_path_list)
+    file_name = os.path.basename(file_path)
     notebook_id = os.path.splitext(file_name)[0]
     print(notebook_id)
 
@@ -138,7 +138,7 @@ def ProcessEachFile(file_path):
         .appName("PythonSort")\
         .getOrCreate()
 
-    lines = spark.read.text(file_path_list).rdd.map(lambda r: r[0])
+    lines = spark.read.text(file_path).rdd.map(lambda r: r[0])
     ls = lines.map(lambda x: x) \
     .filter(lambda x: 'import' in x) \
     .map(lambda x: x.split(' ')) \
