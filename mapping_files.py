@@ -84,6 +84,11 @@ class ProcessNotebookData(object):
 
         print('got processed rdd ..................................')
 
+        fpaths = processed_rdd.collect()
+
+        for path in fpaths:
+            print(fpath)
+
         # processed_df = (
         #     processed_rdd \
         #     .map(lambda x: [x[0],x[1]]) \
@@ -128,9 +133,7 @@ class ProcessNotebookData(object):
 def ProcessEachFile(file_path):
 
     #file_path_list = file_path.collect()[0]
-
-    file_path_str = file_path[0]
-    print("%s ..........................................." %file_path_str)
+    print("%s ..........................................." %file_path)
 
     # file_name = os.path.basename(file_path)
     # notebook_id = os.path.splitext(file_name)[0]
@@ -157,7 +160,7 @@ def ProcessEachFile(file_path):
     #
     # spark.stop()
 
-    return file_path
+    return (file_path)
 
 
 def main():
