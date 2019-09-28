@@ -135,7 +135,7 @@ def ProcessEachFile(file_path):
     file_path = file_path[0].encode("utf-8")
     # strip off the starting s3n:// from the bucket
     current_bucket = os.path.dirname(str(file_path))[6:24]
-    key = str(filepath)[24:]
+    key = str(file_path)[24:]
     file_name = os.path.basename(str(file_path))
     notebook_id = os.path.splitext(file_name)[0]
 
