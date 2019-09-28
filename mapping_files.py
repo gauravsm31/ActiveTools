@@ -129,35 +129,35 @@ def ProcessEachFile(file_path):
 
     #file_path_list = file_path.collect()[0]
 
-    file_path = file_path[0]
-    print("%s ..........................................." %file_path)
+    file_path_str = file_path[0]
+    print("%s ..........................................." %file_path_str)
 
-    file_name = os.path.basename(file_path)
-    notebook_id = os.path.splitext(file_name)[0]
-    print(notebook_id)
+    # file_name = os.path.basename(file_path)
+    # notebook_id = os.path.splitext(file_name)[0]
+    # print(notebook_id)
+    #
+    # spark = SparkSession\
+    #     .builder\
+    #     .appName("PythonSort")\
+    #     .getOrCreate()
+    #
+    # lines = spark.read.text(file_path).rdd.map(lambda r: r[0])
+    # ls = lines.map(lambda x: x) \
+    # .filter(lambda x: 'import' in x) \
+    # .map(lambda x: x.split(' ')) \
+    # .map(lambda x: [x[i+1] for i in range(len(x)) if x[i]=='"import' or x[i]=='"from']) \
+    # .map(lambda x: x[0].split('.')).map(lambda x: x[0].split('\\')) \
+    # .map(lambda x: x[0]) \
+    # .map(lambda x: (x,1)) \
+    # .reduceByKey(lambda n,m: n+m) \
+    # .map(lambda x: x[0]) \
+    # .map(lambda x: ('lib',1)) \
+    # .reduceByKey(lambda n,m: n+m) \
+    # .map(lambda x : (notebook_id,x[1]))
+    #
+    # spark.stop()
 
-    spark = SparkSession\
-        .builder\
-        .appName("PythonSort")\
-        .getOrCreate()
-
-    lines = spark.read.text(file_path).rdd.map(lambda r: r[0])
-    ls = lines.map(lambda x: x) \
-    .filter(lambda x: 'import' in x) \
-    .map(lambda x: x.split(' ')) \
-    .map(lambda x: [x[i+1] for i in range(len(x)) if x[i]=='"import' or x[i]=='"from']) \
-    .map(lambda x: x[0].split('.')).map(lambda x: x[0].split('\\')) \
-    .map(lambda x: x[0]) \
-    .map(lambda x: (x,1)) \
-    .reduceByKey(lambda n,m: n+m) \
-    .map(lambda x: x[0]) \
-    .map(lambda x: ('lib',1)) \
-    .reduceByKey(lambda n,m: n+m) \
-    .map(lambda x : (notebook_id,x[1]))
-
-    spark.stop()
-
-    return ls
+    return file_path
 
 
 def main():
