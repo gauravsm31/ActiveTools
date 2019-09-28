@@ -129,6 +129,8 @@ def ProcessEachFile(file_path):
 
     #file_path_list = file_path.collect()[0]
 
+    filepath = file_path[0]
+
     file_name = os.path.basename(file_path)
     notebook_id = os.path.splitext(file_name)[0]
     print(notebook_id)
