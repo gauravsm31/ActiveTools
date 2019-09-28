@@ -138,7 +138,7 @@ def ProcessEachFile(file_path):
     with open(file_path) as f:
         if 'import' in f.read():
             return [(notebook_id,str(1))]
-        else
+        else:
             return (file_path)
 
 
