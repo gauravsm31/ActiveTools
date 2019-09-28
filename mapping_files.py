@@ -80,7 +80,7 @@ class ProcessNotebookData(object):
         for item in test:
             print(item)
 
-        processed_rdd = NewRDD.map(labda x: self.ProcessEachFile(x))
+        processed_rdd = NewRDD.map(lambda x: self.ProcessEachFile(x))
 
         processed_schema = StructType([StructField("notebook_id", StringType(), False),
                                          StructField("lib_counts", StringType(), False )])
