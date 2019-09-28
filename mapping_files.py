@@ -142,7 +142,7 @@ def ProcessEachFile(file_path):
     s3_res = boto3.resource('s3')
     s3_res.Bucket(current_bucket).download_file(key,file_name)
 
-    with open(file_path) as f:
+    with open(file_name) as f:
         if 'import' in f.read():
             return (notebook_id,str(1))
         else:
