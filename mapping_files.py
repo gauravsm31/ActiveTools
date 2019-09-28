@@ -9,7 +9,9 @@ from pyspark.sql.types import StructField
 import pyspark
 from pyspark.sql.types import StringType
 import boto3
-from libcountprocess import ProcessNotebooks
+
+# sys.path.append(os.path.join(os.path.dirname(), '..'))
+# from libcountprocess import ProcessNotebooks
 
 
 class ProcessNotebookData(object):
@@ -65,14 +67,14 @@ class ProcessNotebookData(object):
 
     def NotebookMapper(self, file_list):
 
-        process_obj = ProcessNotebooks()
+        #process_obj = ProcessNotebooks()
         files_urls_df = self.NotebookUrlListToDF(file_list)
         # Farm out audio files to Spark workers with a map
         files_urls_df.show()
         print('got file df ..................................')
 
         NewRDD = files_urls_df.rdd.map(list)
-        processed_rdd = NewRDD.map(process_obj.ProcessEachNotebook)
+        processed_rdd = NewRDD.map(self.ProcessEachFile)
 
         processed_schema = StructType([StructField("notebook_id", StringType(), False),
                                          StructField("lib_counts", StringType(), False )])
@@ -86,8 +88,6 @@ class ProcessNotebookData(object):
         #     .select("notebook_id", "lib_counts")
         #     #.toDF(["notebook_id", "lib_counts"])
         # )
-
-        print('got processed df ..................................')
 
         processed_rdd.collect()
 
