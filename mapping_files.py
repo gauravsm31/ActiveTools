@@ -132,7 +132,7 @@ class ProcessNotebookData(object):
 
 def ProcessEachFile(file_path):
 
-    file_path = file_path[0][2:end-1]
+    file_path = file_path[0][1:]
     # strip off the starting s3n:// from the bucket
     current_bucket = os.path.dirname(str(file_path))[6:]
     file_name = os.path.basename(str(file_path))
