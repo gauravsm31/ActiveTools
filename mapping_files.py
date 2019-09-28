@@ -86,8 +86,8 @@ class ProcessNotebookData(object):
 
         fpaths = processed_rdd.collect()
 
-        for path in fpaths:
-            print("first word in file is: %s ..........................................................................." %path)
+        for (path,num) in fpaths:
+            print("notebook/path exists: %s %s ..........................................................................." %path %num)
 
         # processed_df = (
         #     processed_rdd \
@@ -140,9 +140,9 @@ def ProcessEachFile(file_path):
 
     with open(file_path) as f:
         if 'import' in f.read():
-            return [(notebook_id,str(1))]
+            return (notebook_id,str(1))
         else:
-            return (file_path)
+            return (file_path,str(1))
 
 
 def main():
