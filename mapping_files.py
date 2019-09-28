@@ -61,9 +61,6 @@ class ProcessNotebookData(object):
         files_urls_df = self.spark.createDataFrame(url_list_rdd, url_list_schema)
         return files_urls_df
 
-    def ProcessEachFile(self, file_path):
-        return file_path
-
 
     def NotebookMapper(self, file_list):
 
@@ -80,7 +77,7 @@ class ProcessNotebookData(object):
         for item in test:
             print(item)
 
-        processed_rdd = NewRDD.map(lambda x: self.ProcessEachFile(x))
+        processed_rdd = NewRDD.map(ProcessEachFile)
 
         processed_schema = StructType([StructField("notebook_id", StringType(), False),
                                          StructField("lib_counts", StringType(), False )])
@@ -127,6 +124,9 @@ class ProcessNotebookData(object):
         print("Saved To Postgres .......................................")
 
         #self.spark.stop()
+
+def ProcessEachFile(self, file_path):
+    return file_path
 
 
 def main():
