@@ -62,7 +62,7 @@ class ProcessNotebookData(object):
         return files_urls_df
 
     def ProcessEachFile(self, file_path):
-        return file_path
+        return str(file_path.url)
 
 
     def NotebookMapper(self, file_list):
