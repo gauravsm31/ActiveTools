@@ -70,14 +70,16 @@ class ProcessNotebookData(object):
         files_urls_df.show()
         print('got file df ..................................')
 
-        NewRDD = files_urls_df.rdd.map(list)
+        #NewRDD = files_urls_df.rdd.map(list)
 
-        test = NewRDD.collect()
+        # test = NewRDD.collect()
+        #
+        # for item in test:
+        #     print(item)
 
-        for item in test:
-            print(item)
+        #processed_rdd = NewRDD.map(ProcessEachFile)
 
-        processed_rdd = NewRDD.map(ProcessEachFile)
+        processed_rdd = files_urls_df.rdd.map(ProcessEachFile)
 
         processed_schema = StructType([StructField("notebook_id", StringType(), False),
                                          StructField("lib_counts", StringType(), False )])
@@ -130,9 +132,10 @@ class ProcessNotebookData(object):
 
         #self.spark.stop()
 
-def ProcessEachFile(file_path):
+def ProcessEachFile(df_row):
 
-    file_path = file_path[0][1:]
+    file_path = df_row.url
+    #file_path = file_path[0][1:]
     # strip off the starting s3n:// from the bucket
     current_bucket = os.path.dirname(str(file_path))[6:]
     file_name = os.path.basename(str(file_path))
