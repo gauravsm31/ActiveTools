@@ -71,7 +71,7 @@ class ProcessNotebookData(object):
         files_urls_df.show()
         print('got file df ..................................')
 
-        NewRDD_rdd = files_urls_df.rdd.map(list)
+        NewRDD = files_urls_df.rdd.map(list)
         processed_rdd = NewRDD.map(self.ProcessEachFile)
 
         processed_schema = StructType([StructField("notebook_id", StringType(), False),
