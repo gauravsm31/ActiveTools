@@ -135,14 +135,12 @@ def ProcessEachFile(file_path):
     file_path = file_path[0].encode("utf-8")
     # strip off the starting s3n:// from the bucket
     current_bucket = os.path.dirname(str(file_path))[6:24]
-    key = str(file_path)[24:]
+    key = str(file_path)[25:]
     file_name = os.path.basename(str(file_path))
     notebook_id = os.path.splitext(file_name)[0]
 
-    #s3_res = boto3.resource('s3')
-    #s3_res.Bucket(current_bucket).download_file(key,file_name)
-
-
+    s3_res = boto3.resource('s3')
+    s3_res.Bucket(current_bucket).download_file(key,file_name)
 
     with open(file_path) as f:
         if 'import' in f.read():
