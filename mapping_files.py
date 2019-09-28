@@ -62,7 +62,7 @@ class ProcessNotebookData(object):
         return files_urls_df
 
     def ProcessEachFile(self, file_path):
-        return str(file_path.url)
+        return file_path
 
 
     def NotebookMapper(self, file_list):
@@ -80,7 +80,7 @@ class ProcessNotebookData(object):
         for item in test:
             print(item)
 
-        processed_rdd = NewRDD.map(self.ProcessEachFile)
+        processed_rdd = NewRDD.map(labda x: self.ProcessEachFile(x))
 
         processed_schema = StructType([StructField("notebook_id", StringType(), False),
                                          StructField("lib_counts", StringType(), False )])
