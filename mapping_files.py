@@ -131,7 +131,7 @@ class ProcessNotebookData(object):
         #self.spark.stop()
 
 def ProcessEachFile(file_path):
-
+    import boto3
 
     file_path = file_path[0].encode("utf-8")
     # strip off the starting s3n:// from the bucket
