@@ -136,10 +136,10 @@ def ProcessEachFile(file_path):
     notebook_id = os.path.splitext(file_name)[0]
 
     with open(file_path) as f:
-    if 'import' in f.read():
-        return [(notebook_id,str(1))]
-    else
-        return (file_path)
+        if 'import' in f.read():
+            return [(notebook_id,str(1))]
+        else
+            return (file_path)
 
 
 def main():
