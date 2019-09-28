@@ -87,7 +87,7 @@ class ProcessNotebookData(object):
         fpaths = processed_rdd.collect()
 
         for path in fpaths:
-            print(fpath)
+            print(path)    
 
         # processed_df = (
         #     processed_rdd \
