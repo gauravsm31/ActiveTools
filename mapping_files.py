@@ -138,14 +138,8 @@ def ProcessEachFile(file_path):
     # file_name = os.path.basename(file_path)
     # notebook_id = os.path.splitext(file_name)[0]
     # print(notebook_id)
-    #
-    spark = SparkSession\
-        .builder\
-        .appName("PythonSort")\
-        .getOrCreate()
-    #
-    lines = spark.read.text(file_path).rdd.map(lambda r: r[0])
-    word = lines.map(lambda x: x[0])
+
+
     # ls = lines.map(lambda x: x) \
     # .filter(lambda x: 'import' in x) \
     # .map(lambda x: x.split(' ')) \
@@ -159,9 +153,9 @@ def ProcessEachFile(file_path):
     # .reduceByKey(lambda n,m: n+m) \
     # .map(lambda x : (notebook_id,x[1]))
     #
-    spark.stop()
+    # spark.stop()
 
-    return (word)
+    return (file_path)
 
 
 def main():
