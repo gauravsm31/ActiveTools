@@ -69,23 +69,26 @@ class ProcessNotebookData(object):
         notebook_id = os.path.splitext(file_name)[0]
         print(notebook_id)
 
-        lines = self.spark.read.text(file_path).rdd.map(lambda r: r[0])
-        import_lines = lines.map(lambda x: x) \
-        .filter(lambda x: 'import' in x) \
+        NewRDD = self.spark.read.text(file_path).rdd
 
-        if import_lines.isEmpty():
-            finalRDD = import_lines.map(lambda x: (notebook_id,0))
+        if not NewRDD.isEmpty():
+            import_lines = NewRDD.map(lambda r: r[0]) \
+            .map(lambda x: x) \
+            .filter(lambda x: 'import' in x) \
+
+            if not import_lines.isEmpty():
+                finalRDD = import_lines.map(lambda x: x.split(' ')) \
+                .map(lambda x: [x[i+1] for i in range(len(x)) if x[i]=='"import' or x[i]=='"from']) \
+                .map(lambda x: x[0].split('.')).map(lambda x: x[0].split('\\')) \
+                .map(lambda x: x[0]) \
+                .map(lambda x: (x,1)) \
+                .reduceByKey(lambda n,m: n+m) \
+                .map(lambda x: ('lib',1)) \
+                .reduceByKey(lambda n,m: n+m) \
+                .map(lambda x : (notebook_id,x[1]))
 
         else:
-            finalRDD = import_lines.map(lambda x: x.split(' ')) \
-            .map(lambda x: [x[i+1] for i in range(len(x)) if x[i]=='"import' or x[i]=='"from']) \
-            .map(lambda x: x[0].split('.')).map(lambda x: x[0].split('\\')) \
-            .map(lambda x: x[0]) \
-            .map(lambda x: (x,1)) \
-            .reduceByKey(lambda n,m: n+m) \
-            .map(lambda x: ('lib',1)) \
-            .reduceByKey(lambda n,m: n+m) \
-            .map(lambda x : (notebook_id,x[1]))
+            finalRDD = NewRDD.map(lambda x: (notebook_id,0))
 
         return finalRDD
 
