@@ -9,6 +9,8 @@ from pyspark.sql.types import StructField
 import pyspark
 from pyspark.sql.types import StringType
 import boto3
+import spark.implicits._
+import org.apache.spark.sql.functions._
 
 # sys.path.append(os.path.join(os.path.dirname(), '..'))
 # from libcountprocess import ProcessNotebooks
@@ -87,6 +89,13 @@ class ProcessNotebookData(object):
 
         return processed_df
 
+    # def AttachRepoID(self, files_urls_df):
+    #     repo_df = spark.read.csv("s3a://gauravdatabeamdata/hsample_data/data/csv/notebooks_sample", header=True, multiLine=True, escape='"')
+    #     len_path = 6 + len(self.bucket) + 1 + len(self.folder)
+    #     files_urls_df = files_urls_df.withColumn("nb_id", expr("substring(url, len_path+1, length(url)-len_path-7)"))
+    #     files_urls_df.join(repo_df, files_urls_df("nd_id") === repo_df("repo_id"))
+    #     return files_urls_df
+
 
     def write_to_postgres(self, processed_df, table_name):
         print('Writing in Postgres Func ..................................')
@@ -103,10 +112,14 @@ class ProcessNotebookData(object):
         file_list = self.getNotebookFileLocations()
 
         # Get a dataframe with urls of filenames
+        print("Converting file urls list to file urls dataframe .................................")
         files_urls_df = self.NotebookUrlListToDF(file_list)
 
+        #print("Getting notebook id - repo id information ................................")
+        #nbURL_ndID_repoID_df = self.AttachRepoID(files_urls_df)
+
         # Process each file
-        print("Sending files to process...")
+        print("Sending files to process..................................")
         processed_df = self.NotebookMapper(files_urls_df)
 
         print("Saving counts table into Postgres...")
@@ -123,7 +136,7 @@ def ProcessEachFile(file_path):
     current_bucket = os.path.dirname(str(file_path))[6:24]
     key = str(file_path)[25:]
     file_name = os.path.basename(str(file_path))
-    notebook_id = os.path.splitext(file_name)[0]
+    notebook_id = os.path.splitext(file_name)[0][3:]
 
     s3_res = boto3.resource('s3')
     s3_res.Bucket(current_bucket).download_file(key,file_name)
@@ -132,7 +145,7 @@ def ProcessEachFile(file_path):
         if 'import' in f.read():
             return (notebook_id,str(1))
         else:
-            return (file_path,str(1))
+            return (notebook_id,str(0))
 
 
 def main():
