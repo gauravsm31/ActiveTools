@@ -214,7 +214,7 @@ def ProcessEachFile(file_info):
     if not return_lib_list:
         returndata.append(('nolibrary','nodate',0))
     else:
-        for library in list:
+        for library in return_lib_list:
             returndata.append((library,file_date,1))
 
     return returndata
