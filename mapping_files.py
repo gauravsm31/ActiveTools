@@ -72,15 +72,6 @@ class ProcessNotebookData(object):
 
         processed_rdd = files_urls_df.rdd.map(ProcessEachFile)
 
-        # NewRDD = files_urls_df.rdd.map(list)
-        #
-        # test = NewRDD.collect()
-        #
-        # for item in test:
-        #     print(item)
-        #
-        # processed_rdd = NewRDD.map(ProcessEachFile)
-
         processed_schema = StructType([StructField("notebook_id", StringType(), False),
                                          StructField("lib_counts", StringType(), False )])
 
@@ -91,19 +82,19 @@ class ProcessNotebookData(object):
         for (path,num) in fpaths:
             print("notebook/path exists: %s %s ..........................................................................." %(path,num))
 
-        # processed_df = (
-        #     processed_rdd \
-        #     .map(lambda x: [x[0],x[1]]) \
-        #     .toDF(processed_schema) \
-        #     .select("notebook_id", "lib_counts")
-        #     #.toDF(["notebook_id", "lib_counts"])
-        # )
-
         processed_rdd.collect()
 
-        # self.write_to_postgres(processed_df, "lib_counts")
-        #
-        # print('wrote to postgres ..................................')
+        processed_df = (
+            processed_rdd \
+            .map(lambda x: [x[0],x[1]]) \
+            .toDF(processed_schema) \
+            .select("notebook_id", "lib_counts")
+            #.toDF(["notebook_id", "lib_counts"])
+        )
+
+        self.write_to_postgres(processed_df, "lib_counts")
+
+        print('wrote to postgres ..................................')
 
         return
 
