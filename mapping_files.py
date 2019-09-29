@@ -208,9 +208,17 @@ def ProcessEachFile(file_info):
 
     importedItems = find_imports(file_name)
 
-    return_lib_list = lib_df.Libraries[lib_df['Libraries'].isin(importedItems)].values
+    return_lib_list = lib_df.Libraries[lib_df['Libraries'].isin(importedItems)].values.tolist()
 
-    
+    # returndata = []
+    # if not return_lib_list:
+    #     returndata.append(('nolibrary','nodate',0))
+    # else:
+    #     for library in list:
+    #         returndata.append((library,file_date,1))
+    #
+    # return returndata
+
 
     # library_return_list = []
     # if libs_in_file_df.empty:
@@ -222,9 +230,9 @@ def ProcessEachFile(file_info):
     # return library_return_list
 
     if 'matplotlib' in importedItems:
-        return ('matplotlib',str(file_date),str(1))
+        return [('matplotlib',str(file_date),str(1))]
     else:
-        return ('no matplotlib',str(file_date),str(0))
+        return [('no matplotlib',str(file_date),str(0))]
         #return ()
 
 def main():
