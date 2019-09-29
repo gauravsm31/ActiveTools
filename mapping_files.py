@@ -208,6 +208,18 @@ def ProcessEachFile(file_info):
 
     importedItems = find_imports(file_name)
 
+    lib_df['IsInFIle'] = df['Libraries'].apply(lambda x: any([k in x for k in importedItems]))
+    libs_in_file_df =  lib_df[lib_df['IsInFIle']=='True']
+
+    # library_return_list = []
+    # if libs_in_file_df.empty:
+    #     return [('nolibrary','nodate',0)]
+    # else:
+    #     for index, row in ibs_in_file_df.iterrows():
+    #         library_return_list.append((str(row[0]),str(file_date),1))
+    #
+    # return library_return_list
+
     if 'matplotlib' in importedItems:
         return ('matplotlib',str(file_date),str(1))
     else:
