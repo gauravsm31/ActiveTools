@@ -86,7 +86,7 @@ class ProcessNotebookData(object):
 
         print('got file df ..................................')
         # Farm out audio files to Spark workers with a map
-        processed_rdd = files_urls_df.rdd.map(ProcessEachFile).filter(lambda x: x is not u'')
+        processed_rdd = files_urls_df.rdd.map(ProcessEachFile) #.filter(lambda x: x is not u'')
 
         processed_schema = StructType([StructField("library", StringType(), False),
                                          StructField("datetime", StringType(), False ),
@@ -201,8 +201,8 @@ def ProcessEachFile(file_info):
     if 'matplotlib' in importedItems:
         return ('matplotlib',str(file_timestamp),str(1))
     else:
-        #return ('no matplotlib',str(file_timestamp),str(0))
-        return ()
+        return ('no matplotlib',str(file_timestamp),str(0))
+        #return ()
 
 def main():
     notebooks_folder = "sample_data/data/test_notebooks/"
