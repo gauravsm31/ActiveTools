@@ -88,7 +88,7 @@ class ProcessNotebookData(object):
         # Farm out audio files to Spark workers with a map
         processed_rdd = files_urls_df.rdd.map(ProcessEachFile)
 
-        processed_schema = StructType([StructField("notebook_id", StringType(), False),
+        processed_schema = StructType([StructField("library", StringType(), False),
                                          StructField("datetime", StringType(), False ),
                                          StructField("lib_counts", StringType(), False )])
 
@@ -98,7 +98,7 @@ class ProcessNotebookData(object):
             processed_rdd \
             .map(lambda x: [x[0],x[1],x[2]]) \
             .toDF(processed_schema) \
-            .select("notebook_id","datetime","lib_counts")
+            .select("library","datetime","lib_counts")
         )
 
         return processed_df
@@ -146,27 +146,33 @@ def find_imports(toCheck):
     will be included. This program does not run the code, so import statements
     in if/else or try/except blocks will always be included.
     """
-    import imp
+    #import imp
+    import re
     importedItems = []
     with open(toCheck, 'r') as pyFile:
         for line in pyFile:
             # ignore comments
-            line = line.strip().partition("#")[0].partition("as")[0].split(' ')
+            line = line.strip().strip(',').strip('"').strip('n').strip('\\').partition("#")[0].partition(" as ")[0].split(' ')
+            #line = re.split(r"[ .]+",line)
             if line[0] == "import":
                 for imported in line[1:]:
-                    # remove commas (this doesn't check for commas if
+                    # remove commas - this doesn't check for commas if
                     # they're supposed to be there!
                     imported = imported.strip(", ")
-                    try:
-                        # check to see if the module can be imported
-                        # (doesn't actually import - just finds it if it exists)
-                        imp.find_module(imported)
-                        # add to the list of items we imported
-                        importedItems.append(imported)
-                    except ImportError:
-                        # ignore items that can't be imported
-                        # (unless that isn't what you want?)
+                    if "." in imported:
+                        imported = imported.split('.')[0]
+                    else:
                         pass
+                    importedItems.append(imported)
+            if line[0] == "from" and line[2] == "import":
+                imported = line[1]
+                if "." in imported:
+                    imported = imported.split('.')[0]
+                else:
+                    pass
+                importedItems.append(imported)
+    importedItems = list(dict.fromkeys(importedItems))
+    print(importedItems)
 
     return importedItems
 
@@ -193,18 +199,10 @@ def ProcessEachFile(file_info):
 
     importedItems = find_imports(file_name)
 
-    with open(file_name) as f:
-        if 'import' in f.read():
-
-            # instructions = dis.get_instructions(f.read())
-            # imports = [__ for __ in instructions if 'IMPORT' in __.opname]
-            # grouped = defaultdict(list)
-            # for instr in imports:
-            #     grouped[instr.opname].append(instr.argval)
-
-            return (notebook_id,str(file_timestamp),str(1))
-        else:
-            return (notebook_id,str(file_timestamp),str(0))
+    if 'matplotlib' in importedItems:
+        return ('matplotlib',str(file_timestamp),str(1))
+    else:
+        return ('no matplotlib',str(file_timestamp),str(0))
 
 
 def main():
