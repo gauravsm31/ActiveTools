@@ -73,6 +73,10 @@ class ProcessNotebookData(object):
         return files_urls_df
 
 
+    def AttachTimestamp(self, nbURL_ndID_repoID_df):
+        nbURL_nbID_timestamp_df = self.spark.read.json("s3a://gauravdatabeamdata/sample_data/data/repository_metadata/*")
+        return nbURL_nbID_timestamp_df
+
     def NotebookMapper(self, files_urls_df):
 
         print('got file df ..................................')
@@ -119,7 +123,8 @@ class ProcessNotebookData(object):
         print("Getting notebook id - repo id information ................................")
         nbURL_ndID_repoID_df = self.AttachRepoID(files_urls_df)
 
-        nbURL_ndID_repoID_df.show()
+        print("Getting Timestamp for each notebook .........................................")
+        nbURL_nbID_timestamp_df = self.AttachTimestamp(nbURL_ndID_repoID_df)
 
         # Process each file
         print("Sending files to process..................................")
@@ -129,6 +134,7 @@ class ProcessNotebookData(object):
         self.write_to_postgres(processed_df, "lib_counts")
 
         print("Saved To Postgres .......................................")
+
 
 
 def ProcessEachFile(file_path):
