@@ -11,8 +11,8 @@ from pyspark.sql.types import StringType
 import boto3
 from pyspark.sql.functions import udf, expr, concat, col
 import pandas as pd
-import dis
-from collections import defaultdict
+# import dis
+# from collections import defaultdict
 # import pyspark.implicits._
 # import pyspark.sql.functions._
 
@@ -139,6 +139,38 @@ class ProcessNotebookData(object):
 
 
 
+def find_imports(toCheck):
+    """
+    Given a filename, returns a list of modules imported by the program.
+    Only modules that can be imported from the current directory
+    will be included. This program does not run the code, so import statements
+    in if/else or try/except blocks will always be included.
+    """
+    import imp
+    importedItems = []
+    with open(toCheck, 'r') as pyFile:
+        for line in pyFile:
+            # ignore comments
+            line = line.strip().partition("#")[0].partition("as")[0].split(' ')
+            if line[0] == "import":
+                for imported in line[1:]:
+                    # remove commas (this doesn't check for commas if
+                    # they're supposed to be there!
+                    imported = imported.strip(", ")
+                    try:
+                        # check to see if the module can be imported
+                        # (doesn't actually import - just finds it if it exists)
+                        imp.find_module(imported)
+                        # add to the list of items we imported
+                        importedItems.append(imported)
+                    except ImportError:
+                        # ignore items that can't be imported
+                        # (unless that isn't what you want?)
+                        pass
+
+    return importedItems
+
+
 def ProcessEachFile(file_info):
 
     file_path = file_info.s3_url
@@ -159,15 +191,16 @@ def ProcessEachFile(file_info):
     s3_res.Bucket(current_bucket).download_file(LibInfoFile,LibInfoFile)
     lib_df = pd.read_csv(LibInfoFile)
 
+    importedItems = find_imports(file_name)
 
     with open(file_name) as f:
         if 'import' in f.read():
 
-            instructions = dis.get_instructions(f.read())
-            imports = [__ for __ in instructions if 'IMPORT' in __.opname]
-            grouped = defaultdict(list)
-            for instr in imports:
-                grouped[instr.opname].append(instr.argval)
+            # instructions = dis.get_instructions(f.read())
+            # imports = [__ for __ in instructions if 'IMPORT' in __.opname]
+            # grouped = defaultdict(list)
+            # for instr in imports:
+            #     grouped[instr.opname].append(instr.argval)
 
             return (notebook_id,str(file_timestamp),str(1))
         else:
