@@ -130,7 +130,8 @@ class ProcessNotebookData(object):
 
 def ProcessEachFile(file_path):
 
-    file_path = file_path[0].encode("utf-8")
+    file_path = file_path.url
+    file_path = file_path.encode("utf-8")
 
     # strip off the starting s3a:// from the bucket
     current_bucket = os.path.dirname(str(file_path))[6:24]
