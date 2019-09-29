@@ -154,7 +154,7 @@ def ProcessEachFile(file_info):
 
     # Get Libraries to Analyse Trends
     LibInfoFile = 'LibraryInfo.csv'
-    s3_res.Bucket(current_bucket).download_file(LibInfoFile)
+    s3_res.Bucket(current_bucket).download_file(LibInfoFile,LibInfoFile)
     lib_df = pd.read_csv(LibInfoFile)
 
     with open(file_name) as f:
