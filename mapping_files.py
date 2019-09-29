@@ -76,7 +76,7 @@ class ProcessNotebookData(object):
     def AttachTimestamp(self, nbURL_ndID_repoID_df):
         nbURL_nbID_timestamp_df = self.spark.read.json("s3a://gauravdatabeamdata/sample_data/data/repository_metadata/*")
         nbURL_nbID_timestamp_df = nbURL_nbID_timestamp_df.join(nbURL_ndID_repoID_df, nbURL_nbID_timestamp_df.id == nbURL_ndID_repoID_df.repo_id)
-        nbURL_nbID_timestamp_df = nbURL_nbID_timestamp_df.select([c for c in nbURL_nbID_timestamp_df.columns if c in {'nb_id','s3_url','repo_id','updated_at'}])
+        nbURL_nbID_timestamp_df = nbURL_nbID_timestamp_df.select([c for c in nbURL_nbID_timestamp_df.columns if c in {'nb_id','s3_url','updated_at'}])
         return nbURL_nbID_timestamp_df
 
     def NotebookMapper(self, files_urls_df):
@@ -86,6 +86,7 @@ class ProcessNotebookData(object):
         processed_rdd = files_urls_df.rdd.map(ProcessEachFile)
 
         processed_schema = StructType([StructField("notebook_id", StringType(), False),
+                                         StructField("datetime", StringType(), False ),
                                          StructField("lib_counts", StringType(), False )])
 
         print('got processed rdd ..................................')
@@ -97,16 +98,15 @@ class ProcessNotebookData(object):
 
         processed_df = (
             processed_rdd \
-            .map(lambda x: [x[0],x[1]]) \
+            .map(lambda x: [x[0],x[1],x[2]]) \
             .toDF(processed_schema) \
-            .select("notebook_id", "lib_counts")
+            .select("notebook_id","datetime","lib_counts")
         )
 
         return processed_df
 
     def write_to_postgres(self, processed_df, table_name):
         print('Writing in Postgres Func ..................................')
-
         table = table_name
         mode = "append"
         connector = postgres.PostgresConnector()
@@ -141,9 +141,11 @@ class ProcessNotebookData(object):
 
 
 
-def ProcessEachFile(file_path):
+def ProcessEachFile(file_info):
 
-    file_path = file_path.s3_url
+    file_path = file_info.s3_url
+    file_timestamp = file_info.updated_at
+
     file_path = file_path.encode("utf-8")
 
     # strip off the starting s3a:// from the bucket
@@ -157,9 +159,9 @@ def ProcessEachFile(file_path):
 
     with open(file_name) as f:
         if 'import' in f.read():
-            return (notebook_id,str(1))
+            return (notebook_id,str(file_timestamp),str(1))
         else:
-            return (notebook_id,str(0))
+            return (notebook_id,str(file_timestamp),str(0))
 
 
 def main():
