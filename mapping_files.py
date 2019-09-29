@@ -142,8 +142,7 @@ class ProcessNotebookData(object):
 def find_imports(toCheck):
     """
     Given a filename, returns a list of modules imported by the program.
-    Only modules that can be imported from the current directory
-    will be included. This program does not run the code, so import statements
+    This program does not run the code, so import statements
     in if/else or try/except blocks will always be included.
     """
     #import imp
@@ -202,8 +201,8 @@ def ProcessEachFile(file_info):
     if 'matplotlib' in importedItems:
         return ('matplotlib',str(file_timestamp),str(1))
     else:
-        return ('no matplotlib',str(file_timestamp),str(0))
-
+        #return ('no matplotlib',str(file_timestamp),str(0))
+        return
 
 def main():
     notebooks_folder = "sample_data/data/test_notebooks/"
