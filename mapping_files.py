@@ -75,6 +75,8 @@ class ProcessNotebookData(object):
 
     def AttachTimestamp(self, nbURL_ndID_repoID_df):
         nbURL_nbID_timestamp_df = self.spark.read.json("s3a://gauravdatabeamdata/sample_data/data/repository_metadata/*")
+        nbURL_nbID_timestamp_df = nbURL_nbID_timestamp_df.join(nbURL_ndID_repoID_df, nbURL_nbID_timestamp_df.id == nbURL_ndID_repoID_df.repo_id)
+        nbURL_nbID_timestamp_df = nbURL_nbID_timestamp_df.select([c for c in files_urls_df.columns if c in {'nb_id','url','repo_id','updated_at'}])
         return nbURL_nbID_timestamp_df
 
     def NotebookMapper(self, files_urls_df):
