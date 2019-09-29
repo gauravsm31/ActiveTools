@@ -9,7 +9,6 @@ from pyspark.sql.types import StructField
 import pyspark
 from pyspark.sql.types import StringType
 import boto3
-import spark.implicits._
 import org.apache.spark.sql.functions._
 
 # sys.path.append(os.path.join(os.path.dirname(), '..'))
