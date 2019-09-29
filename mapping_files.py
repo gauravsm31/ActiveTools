@@ -132,7 +132,7 @@ class ProcessNotebookData(object):
 
         # Process each file
         print("Sending files to process..................................")
-        processed_df = self.NotebookMapper(nbURL_ndID_repoID_df)
+        processed_df = self.NotebookMapper(nbURL_nbID_timestamp_df)
 
         print("Saving counts table into Postgres...")
         self.write_to_postgres(processed_df, "lib_counts")
