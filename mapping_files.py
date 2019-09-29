@@ -11,6 +11,8 @@ from pyspark.sql.types import StringType
 import boto3
 from pyspark.sql.functions import udf, expr, concat, col
 import pandas as pd
+import dis
+from collections import defaultdict
 # import pyspark.implicits._
 # import pyspark.sql.functions._
 
@@ -157,8 +159,16 @@ def ProcessEachFile(file_info):
     s3_res.Bucket(current_bucket).download_file(LibInfoFile,LibInfoFile)
     lib_df = pd.read_csv(LibInfoFile)
 
+
     with open(file_name) as f:
         if 'import' in f.read():
+            
+            instructions = dis.get_instructions(statements)
+            imports = [__ for __ in instructions if 'IMPORT' in __.opname]
+            grouped = defaultdict(list)
+            for instr in imports:
+                grouped[instr.opname].append(instr.argval)
+
             return (notebook_id,str(file_timestamp),str(1))
         else:
             return (notebook_id,str(file_timestamp),str(0))
