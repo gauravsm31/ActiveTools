@@ -208,7 +208,7 @@ def ProcessEachFile(file_info):
 
     importedItems = find_imports(file_name)
 
-    lib_df['IsInFIle'] = df['Libraries'].apply(lambda x: any([k in x for k in importedItems]))
+    lib_df['IsInFIle'] = lib_df['Libraries'].apply(lambda x: any([k in x for k in importedItems]))
     libs_in_file_df =  lib_df[lib_df['IsInFIle']=='True']
 
     # library_return_list = []
