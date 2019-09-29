@@ -9,7 +9,8 @@ from pyspark.sql.types import StructField
 import pyspark
 from pyspark.sql.types import StringType
 import boto3
-import org.apache.spark.sql.functions._
+import pyspark.implicits._
+import pyspark.sql.functions._
 
 # sys.path.append(os.path.join(os.path.dirname(), '..'))
 # from libcountprocess import ProcessNotebooks
