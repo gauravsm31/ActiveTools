@@ -162,8 +162,8 @@ def ProcessEachFile(file_info):
 
     with open(file_name) as f:
         if 'import' in f.read():
-            
-            instructions = dis.get_instructions(statements)
+
+            instructions = dis.get_instructions(f.read())
             imports = [__ for __ in instructions if 'IMPORT' in __.opname]
             grouped = defaultdict(list)
             for instr in imports:
