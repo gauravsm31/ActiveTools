@@ -11,6 +11,7 @@ from pyspark.sql.types import StringType
 import boto3
 from pyspark.sql.functions import udf, expr, concat, col
 import pandas as pd
+import datetime
 # import dis
 # from collections import defaultdict
 # import pyspark.implicits._
@@ -176,10 +177,19 @@ def find_imports(toCheck):
     return importedItems
 
 
+def GetYearMonth(file_timestamp):
+    d = datetime.datetime.strptime(str(file_timestamp),"%Y-%m-%dT%H:%M:%SZ")
+    new_format = "%Y-%m"
+    return d.strftime(new_format)
+
+
+
 def ProcessEachFile(file_info):
 
     file_path = file_info.s3_url
     file_timestamp = file_info.updated_at
+    file_date = GetYearMonth(file_timestamp)
+
     file_path = file_path.encode("utf-8")
 
     # strip off the starting s3a:// from the bucket
@@ -199,9 +209,9 @@ def ProcessEachFile(file_info):
     importedItems = find_imports(file_name)
 
     if 'matplotlib' in importedItems:
-        return ('matplotlib',str(file_timestamp),str(1))
+        return ('matplotlib',str(file_date),str(1))
     else:
-        return ('no matplotlib',str(file_timestamp),str(0))
+        return ('no matplotlib',str(file_date),str(0))
         #return ()
 
 def main():
