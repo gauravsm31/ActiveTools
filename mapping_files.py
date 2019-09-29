@@ -68,8 +68,8 @@ class ProcessNotebookData(object):
         repo_df = self.spark.read.csv("s3a://gauravdatabeamdata/sample_data/data/csv/notebooks_sample.csv", header=True, multiLine=True, escape='"')
         len_path = 6 + len(self.bucket) + 1 + len(self.folder)
         files_urls_df = files_urls_df.withColumn("nb_id", expr("substring(url, " + str(len_path+4) + ", length(url)-" + str(len_path) + "-9)"))
-        files_urls_df = files_urls_df.join(repo_df,"nb_id")#files_urls_df.nb_id == repo_df.nb_id)
-        #files_urls_df = files_urls_df.select([c for c in files_urls_df.columns if c not in {'GpuName','GPU1_TwoPartHwID'}])
+        files_urls_df = files_urls_df.join(repo_df,"nb_id")
+        files_urls_df = files_urls_df.select([c for c in files_urls_df.columns if c not in {'nb_id','url','repo_id'}])
         return files_urls_df
 
 
