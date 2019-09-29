@@ -10,6 +10,7 @@ import pyspark
 from pyspark.sql.types import StringType
 import boto3
 from pyspark.sql.functions import udf, expr, concat, col
+import pandas as pd
 # import pyspark.implicits._
 # import pyspark.sql.functions._
 
@@ -140,7 +141,6 @@ def ProcessEachFile(file_info):
 
     file_path = file_info.s3_url
     file_timestamp = file_info.updated_at
-
     file_path = file_path.encode("utf-8")
 
     # strip off the starting s3a:// from the bucket
@@ -152,6 +152,11 @@ def ProcessEachFile(file_info):
     s3_res = boto3.resource('s3')
     s3_res.Bucket(current_bucket).download_file(key,file_name)
 
+    # Get Libraries to Analyse Trends
+    LibInfoFile = 'LibraryInfo.csv'
+    s3_res.Bucket(current_bucket).download_file(LibInfoFile)
+    lib_df = pd.read_csv(LibInfoFile)
+
     with open(file_name) as f:
         if 'import' in f.read():
             return (notebook_id,str(file_timestamp),str(1))
@@ -160,7 +165,7 @@ def ProcessEachFile(file_info):
 
 
 def main():
-    notebooks_folder = "sample_data/data/notebooks/"
+    notebooks_folder = "sample_data/data/test_notebooks/"
     proc = ProcessNotebookData(notebooks_folder)
     proc.run(notebooks_folder)
 
