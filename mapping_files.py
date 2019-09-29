@@ -89,12 +89,12 @@ class ProcessNotebookData(object):
 
         return processed_df
 
-    # def AttachRepoID(self, files_urls_df):
-    #     repo_df = spark.read.csv("s3a://gauravdatabeamdata/hsample_data/data/csv/notebooks_sample", header=True, multiLine=True, escape='"')
-    #     len_path = 6 + len(self.bucket) + 1 + len(self.folder)
-    #     files_urls_df = files_urls_df.withColumn("nb_id", expr("substring(url, len_path+1, length(url)-len_path-7)"))
-    #     files_urls_df.join(repo_df, files_urls_df("nd_id") === repo_df("repo_id"))
-    #     return files_urls_df
+    def AttachRepoID(self, files_urls_df):
+        repo_df = spark.read.csv("s3a://gauravdatabeamdata/hsample_data/data/csv/notebooks_sample", header=True, multiLine=True, escape='"')
+        len_path = 6 + len(self.bucket) + 1 + len(self.folder)
+        files_urls_df = files_urls_df.withColumn("nb_id", expr("substring(url, len_path+1, length(url)-len_path-7)"))
+        files_urls_df.join(repo_df, files_urls_df("nd_id") === repo_df("repo_id"))
+        return files_urls_df
 
 
     def write_to_postgres(self, processed_df, table_name):
@@ -115,12 +115,12 @@ class ProcessNotebookData(object):
         print("Converting file urls list to file urls dataframe .................................")
         files_urls_df = self.NotebookUrlListToDF(file_list)
 
-        #print("Getting notebook id - repo id information ................................")
-        #nbURL_ndID_repoID_df = self.AttachRepoID(files_urls_df)
+        print("Getting notebook id - repo id information ................................")
+        nbURL_ndID_repoID_df = self.AttachRepoID(files_urls_df)
 
         # Process each file
         print("Sending files to process..................................")
-        processed_df = self.NotebookMapper(files_urls_df)
+        processed_df = self.NotebookMapper(nbURL_ndID_repoID_df)
 
         print("Saving counts table into Postgres...")
         self.write_to_postgres(processed_df, "lib_counts")
