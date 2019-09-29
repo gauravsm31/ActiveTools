@@ -91,11 +91,6 @@ class ProcessNotebookData(object):
 
         print('got processed rdd ..................................')
 
-        # test code
-        fpaths = processed_rdd.collect()
-        for (path,num) in fpaths:
-            print("notebook/path exists: %s %s ..........................................................................." %(path,num))
-
         processed_df = (
             processed_rdd \
             .map(lambda x: [x[0],x[1],x[2]]) \
