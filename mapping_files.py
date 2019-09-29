@@ -126,6 +126,8 @@ class ProcessNotebookData(object):
         print("Getting Timestamp for each notebook .........................................")
         nbURL_nbID_timestamp_df = self.AttachTimestamp(nbURL_ndID_repoID_df)
 
+        nbURL_nbID_timestamp_df.show(10)
+
         # Process each file
         print("Sending files to process..................................")
         processed_df = self.NotebookMapper(nbURL_ndID_repoID_df)
