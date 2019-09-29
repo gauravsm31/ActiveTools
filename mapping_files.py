@@ -62,14 +62,10 @@ class ProcessNotebookData(object):
         return files_urls_df
 
 
-    def NotebookMapper(self, file_list):
+    def NotebookMapper(self, files_urls_df):
 
-        #process_obj = ProcessNotebooks()
-        files_urls_df = self.NotebookUrlListToDF(file_list)
-        # Farm out audio files to Spark workers with a map
-        files_urls_df.show()
         print('got file df ..................................')
-
+        # Farm out audio files to Spark workers with a map
         processed_rdd = files_urls_df.rdd.map(ProcessEachFile)
 
         processed_schema = StructType([StructField("notebook_id", StringType(), False),
@@ -77,26 +73,19 @@ class ProcessNotebookData(object):
 
         print('got processed rdd ..................................')
 
+        # test code
         fpaths = processed_rdd.collect()
-
         for (path,num) in fpaths:
             print("notebook/path exists: %s %s ..........................................................................." %(path,num))
-
-        processed_rdd.collect()
 
         processed_df = (
             processed_rdd \
             .map(lambda x: [x[0],x[1]]) \
             .toDF(processed_schema) \
             .select("notebook_id", "lib_counts")
-            #.toDF(["notebook_id", "lib_counts"])
         )
 
-        self.write_to_postgres(processed_df, "lib_counts")
-
-        print('wrote to postgres ..................................')
-
-        return
+        return processed_df
 
 
     def write_to_postgres(self, processed_df, table_name):
@@ -113,15 +102,18 @@ class ProcessNotebookData(object):
         print("batch_run_folder: ", notebooks_folder)
         file_list = self.getNotebookFileLocations()
 
-        print("Sending files to process...")
-        self.NotebookMapper(file_list)
+        # Get a dataframe with urls of filenames
+        files_urls_df = self.NotebookUrlListToDF(file_list)
 
-        #print("Saving counts table into Postgres...")
-        #self.write_to_postgres(processed_df, "lib_counts")
+        # Process each file
+        print("Sending files to process...")
+        processed_df = self.NotebookMapper(files_urls_df)
+
+        print("Saving counts table into Postgres...")
+        self.write_to_postgres(processed_df, "lib_counts")
 
         print("Saved To Postgres .......................................")
 
-        #self.spark.stop()
 
 def ProcessEachFile(file_path):
 
