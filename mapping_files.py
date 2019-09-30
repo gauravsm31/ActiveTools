@@ -87,7 +87,8 @@ class ProcessNotebookData(object):
 
         print('got file df ..................................')
         # Farm out audio files to Spark workers with a map
-        processed_rdd = files_urls_df.rdd.flatMap(ProcessEachFile) #.filter(lambda x: x is not u'')
+        processed_rdd = files_urls_df.rdd.flatMap(ProcessEachFile) \
+                        .filter(lambda x: x[0] != 'nolibrary')
 
         processed_schema = StructType([StructField("library", StringType(), False),
                                          StructField("datetime", StringType(), False ),
