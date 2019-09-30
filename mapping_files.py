@@ -240,7 +240,7 @@ def ProcessEachFile(file_info):
         #return ()
 
 def main():
-    notebooks_folder = "sample_data/data/test_notebooks/"
+    notebooks_folder = "sample_data/data/notebooks/"
     proc = ProcessNotebookData(notebooks_folder)
     proc.run(notebooks_folder)
 
