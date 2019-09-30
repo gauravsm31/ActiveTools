@@ -12,13 +12,6 @@ import boto3
 from pyspark.sql.functions import udf, expr, concat, col
 import pandas as pd
 import datetime
-# import dis
-# from collections import defaultdict
-# import pyspark.implicits._
-# import pyspark.sql.functions._
-
-# sys.path.append(os.path.join(os.path.dirname(), '..'))
-# from libcountprocess import ProcessNotebooks
 
 
 class ProcessNotebookData(object):
@@ -224,20 +217,6 @@ def ProcessEachFile(file_info):
     return returndata
 
 
-    # library_return_list = []
-    # if libs_in_file_df.empty:
-    #     return [('nolibrary','nodate',0)]
-    # else:
-    #     for index, row in ibs_in_file_df.iterrows():
-    #         library_return_list.append((str(row[0]),str(file_date),1))
-    #
-    # return library_return_list
-
-    # if 'matplotlib' in importedItems:
-    #     return [('matplotlib',str(file_date),str(1))]
-    # else:
-    #     return [('no matplotlib',str(file_date),str(0))]
-        #return ()
 
 def main():
     notebooks_folder = "sample_data/data/notebooks/"
