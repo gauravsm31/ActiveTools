@@ -45,7 +45,7 @@ class ProcessNotebookData(object):
 
         while s3_result['IsTruncated']:
             continuation_key = s3_result['NextContinuationToken']
-            s3_result = s3_conn.list_objects_v2(Bucket=bucket_name, Delimiter="/", ContinuationToken=continuation_key)
+            s3_result = s3_conn.list_objects_v2(Bucket=bucket_name, Prefix=prefix, Delimiter="/", ContinuationToken=continuation_key)
             if 'Contents' not in s3_result:
                 break
             else:
