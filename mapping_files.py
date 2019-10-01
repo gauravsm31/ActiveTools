@@ -115,6 +115,7 @@ class ProcessNotebookData(object):
         connector = postgres.PostgresConnector()
 
         for lib in libraries_list:
+            print(lib)
             lib_df = processed_df.where(processed_df.library==str(lib)).select("datetime","lib_counts")
             if  len(lib_df.head(1)) > 0:
                 print("Saving table %s into Postgres........................" %lib)
@@ -230,7 +231,7 @@ def ProcessEachFile(file_info):
 
 
 def main():
-    notebooks_folder = "sample_data/data/notebooks/"
+    notebooks_folder = "sample_data/data/test_notebooks/"
     proc = ProcessNotebookData(notebooks_folder)
     proc.run(notebooks_folder)
 
