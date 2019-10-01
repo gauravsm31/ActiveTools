@@ -140,7 +140,7 @@ class ProcessNotebookData(object):
             else:
                 continue
 
-    def run(self):
+    def run(self,notebooks_folder):
 
         print("batch_run_folder: ", notebooks_folder)
         file_list = self.getNotebookFileLocations()
