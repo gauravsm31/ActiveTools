@@ -124,7 +124,9 @@ class ProcessNotebookData(object):
             else:
                 continue
 
-    def run(self, notebooks_folder):
+    def run(self):
+
+        notebooks_folder = "sample_data/data/test_notebooks/"
 
         print("batch_run_folder: ", notebooks_folder)
         file_list = self.getNotebookFileLocations()
@@ -232,7 +234,6 @@ def ProcessEachFile(file_info):
 
 
 def main():
-    notebooks_folder = "sample_data/data/test_notebooks/"
     proc = ProcessNotebookData(notebooks_folder)
     proc.run(notebooks_folder)
 
