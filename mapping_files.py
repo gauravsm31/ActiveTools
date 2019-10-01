@@ -79,7 +79,7 @@ class ProcessNotebookData(object):
     def NotebookMapper(self, files_urls_df):
 
         print('got file df ..................................')
-        # Farm out audio files to Spark workers with a map
+        # Farm out juoyter notebook files to Spark workers with a flatMap
         processed_rdd = files_urls_df.rdd.flatMap(ProcessEachFile) \
                         .filter(lambda x: x[0][0] != 'nolibrary') \
                         .reduceByKey(lambda n,m: n+m) \
@@ -101,13 +101,20 @@ class ProcessNotebookData(object):
 
         return processed_df
 
-    def write_to_postgres(self, processed_df, table_name):
+    def write_to_postgres(self, library_df, table_name):
         print('Writing in Postgres Func ..................................')
         table = table_name
         mode = "append"
         connector = postgres.PostgresConnector()
-        connector.write(processed_df, table, mode)
+        connector.write(library_df, table, mode)
 
+    def WriteTables(self, processed_df):
+        libinfo_df = spark.read.csv("s3a://gauravdatabeamdata/LibraryInfo.csv", header=True, multiLine=True)
+        libraries_list = libinfo_df.Libraries.values.tolist()
+        for library in libraries_list:
+            library_df = processed_df[processed_df.library==library].drop("library")
+            print("Saving table %s into Postgres........................" %library)
+            self.write_to_postgres(library_df,library)      
 
     def run(self, notebooks_folder):
 
@@ -130,8 +137,8 @@ class ProcessNotebookData(object):
         print("Sending files to process..................................")
         processed_df = self.NotebookMapper(nbURL_nbID_timestamp_df)
 
-        print("Saving counts table into Postgres...")
-        self.write_to_postgres(processed_df, "lib_counts")
+        # print("Saving counts table into Postgres...")
+        # self.write_to_postgres(processed_df, "lib_counts")
 
         print("Saved To Postgres .......................................")
 
@@ -143,14 +150,12 @@ def find_imports(toCheck):
     This program does not run the code, so import statements
     in if/else or try/except blocks will always be included.
     """
-    #import imp
-    import re
+
     importedItems = []
     with open(toCheck, 'r') as pyFile:
         for line in pyFile:
             # ignore comments
             line = line.strip().strip(',').strip('"').strip('n').strip('\\').partition("#")[0].partition(" as ")[0].split(' ')
-            #line = re.split(r"[ .]+",line)
             if line[0] == "import":
                 for imported in line[1:]:
                     # remove commas - this doesn't check for commas if
