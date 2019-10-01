@@ -62,8 +62,8 @@ class ProcessNotebookData(object):
         return files_urls_df
 
     def AttachRepoID(self, files_urls_df):
-        # repo_df = self.spark.read.csv("s3a://gauravdatabeamdata/sample_data/data/csv/notebooks_sample.csv", header=True, multiLine=True, escape='"')
-        repo_df = self.spark.read.csv("s3a://gauravdatabeamdata/Summary_CSV_Data/csv/notebooks.csv", header=True, multiLine=True, escape='"')
+        repo_df = self.spark.read.csv("s3a://gauravdatabeamdata/sample_data/data/csv/notebooks_sample.csv", header=True, multiLine=True, escape='"')
+        # repo_df = self.spark.read.csv("s3a://gauravdatabeamdata/Summary_CSV_Data/csv/notebooks.csv", header=True, multiLine=True, escape='"')
         len_path = 6 + len(self.bucket) + 1 + len(self.folder)
         files_urls_df = files_urls_df.withColumn("nb_id", expr("substring(s3_url, " + str(len_path+4) + ", length(s3_url)-" + str(len_path) + "-9)"))
         files_urls_df = files_urls_df.join(repo_df,"nb_id")
@@ -190,12 +190,13 @@ def find_imports(toCheck):
 
 
 def AttachTimestamp(repo_id,s3_res,current_bucket):
-    # repo_metadata_path = "s3a://gauravdatabeamdata/sample_data/data/repository_metadata/repo_" + repo_id + ".json"
-    repo_metadata_path = "s3a://gauravdatabeamdata/repository_metadata/repo_" + repo_id + ".json"
+    repo_metadata_path = "s3a://gauravdatabeamdata/sample_data/data/repository_metadata/repo_" + repo_id + ".json"
+    # repo_metadata_path = "s3a://gauravdatabeamdata/repository_metadata/repo_" + repo_id + ".json"
     key = str(repo_metadata_path)[25:]
     file_name = "repo_" + repo_id + ".json"
     s3_res.Bucket(current_bucket).download_file(key,file_name)
-    repo_metadata_df = pd.read_json(file_name)
+    repo_metadata_df = pd.read_json(file_name,typ='series')
+    repo_metadata_df.to_frame('count')
     timestamp = repo_metadata_df["updated_at"].values[0]
     return timestamp
 
@@ -248,8 +249,8 @@ def ProcessEachFile(file_info):
 
 
 def main():
-    # notebooks_folder = "sample_data/data/notebooks/"
-    notebooks_folder = "notebooks_1/"
+    notebooks_folder = "sample_data/data/notebooks/"
+    # notebooks_folder = "notebooks_1/"
     proc = ProcessNotebookData(notebooks_folder)
     proc.run(notebooks_folder)
 
