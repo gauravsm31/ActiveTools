@@ -44,9 +44,9 @@ class ProcessNotebookData(object):
         print("List count = " + str(len(file_list)))
 
         for i in range(5):
-            print(file_list_1000[i])
+            print(file_list_1000[len(file_list_1000)-1-i])
 
-        file_list.extend(file_list_1000[1:])
+        file_list.extend(file_list_1000)
 
         while s3_result['IsTruncated']:
             continuation_key = s3_result['NextContinuationToken']
@@ -59,8 +59,8 @@ class ProcessNotebookData(object):
                     file_list_1000.append("s3a://" + bucket_name + "/" + key['Key'])
                 print("List count = " + str(len(file_list)))
                 for i in range(5):
-                    print(file_list_1000[i])
-                file_list.extend(file_list_1000[1:])
+                    print(file_list_1000[len(file_list_1000)-1-i])
+                file_list.extend(file_list_1000)
 
         return file_list
 
@@ -91,7 +91,7 @@ class ProcessNotebookData(object):
 
         print('got file df ..................................')
         # Farm out juoyter notebook files to Spark workers with a flatMap
-        processed_rdd = files_urls_df.rdd.flatMap(ProcessEachFile) \
+        processed_rdd = files_urls_df.rdd.flatMap(lambda x: ProcessEachFile(x,self.bucket)) \
                         .filter(lambda x: x[0][0] != 'nolibrary') \
                         .reduceByKey(lambda n,m: n+m) \
                         .map(lambda x: (x[0][0],x[0][1],x[1]))
@@ -233,7 +233,7 @@ def GetYearMonth(file_timestamp):
     return d.strftime(new_format)
 
 
-def ProcessEachFile(file_info):
+def ProcessEachFile(file_info,current_bucket):
 
     returndata = []
     s3_res = boto3.resource('s3')
@@ -241,7 +241,7 @@ def ProcessEachFile(file_info):
     file_path = file_info.s3_url
     file_path = file_path.encode("utf-8")
     # strip off the starting s3a:// from the bucket
-    current_bucket = os.path.dirname(str(file_path))[6:24]
+    # current_bucket = os.path.dirname(str(file_path))[6:24]
     key = str(file_path)[25:]
     file_name = os.path.basename(str(file_path))
     notebook_id = os.path.splitext(file_name)[0][3:]
