@@ -188,11 +188,14 @@ def find_imports(toCheck):
     return importedItems
 
 
-def AttachTimestamp(repo_id):
+def AttachTimestamp(repo_id,s3_res,current_bucket):
     repo_metadata_path = "s3a://gauravdatabeamdata/sample_data/data/repository_metadata/repo_" + repo_id + ".json"
-    repo_metadata_df = self.spark.read.json(repo_metadata_path)
-    timestamp_df = repo_metadata_df.select([c for c in repo_metadata_df.columns if c in {'updated_at'}])
-    return timestamp_df.updated_at
+    key = str(repo_metadata_path)[25:]
+    file_name = "repo_" + repo_id + ".json"
+    s3_res.Bucket(current_bucket).download_file(key,file_name)
+    repo_metadata_df = pd.read_json(file_name)
+    timestamp = repo_metadata_df.updated_at.values.tolist()[0]
+    return timestamp
 
 
 def GetYearMonth(file_timestamp):
@@ -203,21 +206,21 @@ def GetYearMonth(file_timestamp):
 
 def ProcessEachFile(file_info):
 
+    s3_res = boto3.resource('s3')
+
     file_path = file_info.s3_url
-
-    file_timestamp = AttachTimestamp(str(file_info.repo_id))
-
-    file_date = GetYearMonth(file_timestamp)
-
     file_path = file_path.encode("utf-8")
-
     # strip off the starting s3a:// from the bucket
     current_bucket = os.path.dirname(str(file_path))[6:24]
     key = str(file_path)[25:]
     file_name = os.path.basename(str(file_path))
     notebook_id = os.path.splitext(file_name)[0][3:]
 
-    s3_res = boto3.resource('s3')
+    file_timestamp = AttachTimestamp(str(file_info.repo_id),s3_res,current_bucket)
+
+    file_date = GetYearMonth(file_timestamp)
+
+
     s3_res.Bucket(current_bucket).download_file(key,file_name)
 
     # Get Libraries to Analyse Trends
