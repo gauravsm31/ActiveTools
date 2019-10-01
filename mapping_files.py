@@ -107,31 +107,15 @@ class ProcessNotebookData(object):
         mode = "append"
         connector.write(library_df, table, mode)
 
-    # def WriteTables(self, processed_df):
-    #     libinfo_df = self.spark.read.csv("s3a://gauravdatabeamdata/LibraryInfo.csv", header=True, multiLine=True)
-    #     libraries_list = libinfo_df.select(libinfo_df.Libraries).collect()
-    #
-    #     print("Getting postgre connector..............................")
-    #     connector = postgres.PostgresConnector()
-    #
-    #     for lib_link in libraries_list:
-    #         lib = lib_link.Libraries
-    #         print(lib)
-    #         lib_df = processed_df.where(processed_df.library==str(lib)).select("datetime","lib_counts")
-    #         if  len(lib_df.head(1)) > 0:
-    #             print("Saving table %s into Postgres........................" %lib)
-    #             self.write_to_postgres(lib_df,str(lib),connector)
-    #         else:
-    #             continue
-
     def WriteTables(self, processed_df):
-        libinfo_df = pd.read_csv("s3a://gauravdatabeamdata/LibraryInfo.csv")
-        libraries_list = libinfo_df.Libraries.values.tolist()
+        libinfo_df = self.spark.read.csv("s3a://gauravdatabeamdata/LibraryInfo.csv", header=True, multiLine=True)
+        libraries_list = libinfo_df.select(libinfo_df.Libraries).collect()
 
         print("Getting postgre connector..............................")
         connector = postgres.PostgresConnector()
 
-        for lib in libraries_list:
+        for lib_link in libraries_list:
+            lib = lib_link.Libraries
             print(lib)
             lib_df = processed_df.where(processed_df.library==str(lib)).select("datetime","lib_counts")
             if  len(lib_df.head(1)) > 0:
@@ -139,6 +123,7 @@ class ProcessNotebookData(object):
                 self.write_to_postgres(lib_df,str(lib),connector)
             else:
                 continue
+
 
     def run(self,notebooks_folder):
 
