@@ -91,7 +91,7 @@ class ProcessNotebookData(object):
 
         print('got file df ..................................')
         # Farm out juoyter notebook files to Spark workers with a flatMap
-        processed_rdd = files_urls_df.rdd.flatMap(lambda x: ProcessEachFile(x,self.bucket)) \
+        processed_rdd = files_urls_df.rdd.flatMap(ProcessEachFile) \
                         .filter(lambda x: x[0][0] != 'nolibrary') \
                         .reduceByKey(lambda n,m: n+m) \
                         .map(lambda x: (x[0][0],x[0][1],x[1]))
@@ -151,7 +151,7 @@ class ProcessNotebookData(object):
         #print("Getting Timestamp for each notebook .........................................")
         #nbURL_nbID_timestamp_df = self.AttachTimestamp(nbURL_ndID_repoID_df)
 
-        #nbURL_nbID_timestamp_df.show(10)
+        nbURL_nbID_repoID_df.show(10)
 
         # Process each file
         print("Sending files to process..................................")
@@ -233,7 +233,7 @@ def GetYearMonth(file_timestamp):
     return d.strftime(new_format)
 
 
-def ProcessEachFile(file_info,current_bucket):
+def ProcessEachFile(file_info):
 
     returndata = []
     s3_res = boto3.resource('s3')
@@ -241,7 +241,7 @@ def ProcessEachFile(file_info,current_bucket):
     file_path = file_info.s3_url
     file_path = file_path.encode("utf-8")
     # strip off the starting s3a:// from the bucket
-    # current_bucket = os.path.dirname(str(file_path))[6:24]
+    current_bucket = os.path.dirname(str(file_path))[6:24]
     key = str(file_path)[25:]
     file_name = os.path.basename(str(file_path))
     notebook_id = os.path.splitext(file_name)[0][3:]
