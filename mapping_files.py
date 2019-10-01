@@ -62,7 +62,7 @@ class ProcessNotebookData(object):
         return files_urls_df
 
     def AttachRepoID(self, files_urls_df):
-        repo_df = self.spark.read.csv("s3a://gauravdatabeamdata/sample_data/data/csv/notebooks_sample.csv", header=True, multiLine=True, escape='"')
+        repo_df = self.spark.read.csv("s3a://gauravdatabeamdata/Summary_CSV_Data/csv/notebooks.csv", header=True, multiLine=True, escape='"')
         len_path = 6 + len(self.bucket) + 1 + len(self.folder)
         files_urls_df = files_urls_df.withColumn("nb_id", expr("substring(s3_url, " + str(len_path+4) + ", length(s3_url)-" + str(len_path) + "-9)"))
         files_urls_df = files_urls_df.join(repo_df,"nb_id")
@@ -71,7 +71,7 @@ class ProcessNotebookData(object):
 
 
     def AttachTimestamp(self, nbURL_ndID_repoID_df):
-        nbURL_nbID_timestamp_df = self.spark.read.json("s3a://gauravdatabeamdata/sample_data/data/repository_metadata/*")
+        nbURL_nbID_timestamp_df = self.spark.read.json("s3a://gauravdatabeamdata/repository_metadata/*")
         nbURL_nbID_timestamp_df = nbURL_nbID_timestamp_df.join(nbURL_ndID_repoID_df, nbURL_nbID_timestamp_df.id == nbURL_ndID_repoID_df.repo_id)
         nbURL_nbID_timestamp_df = nbURL_nbID_timestamp_df.select([c for c in nbURL_nbID_timestamp_df.columns if c in {'nb_id','s3_url','updated_at'}])
         return nbURL_nbID_timestamp_df
@@ -233,7 +233,7 @@ def ProcessEachFile(file_info):
 
 
 def main():
-    notebooks_folder = "sample_data/data/notebooks/"
+    notebooks_folder = "notebooks_1/"
     proc = ProcessNotebookData(notebooks_folder)
     proc.run(notebooks_folder)
 
