@@ -170,9 +170,9 @@ def find_imports(toCheck):
         for line in pyFile:
             if line == []:
                 pass
-            # ignore comments
-            line = line.strip().strip(',').strip('"').strip('n').strip('\\').partition("#")[0].partition(" as ")[0].split(' ')
             else:
+                # ignore comments
+                line = line.strip().strip(',').strip('"').strip('n').strip('\\').partition("#")[0].partition(" as ")[0].split(' ')
                 if line[0] == "import":
                     for imported in line[1:]:
                         # remove commas - this doesn't check for commas if
