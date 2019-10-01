@@ -194,7 +194,7 @@ def AttachTimestamp(repo_id,s3_res,current_bucket):
     file_name = "repo_" + repo_id + ".json"
     s3_res.Bucket(current_bucket).download_file(key,file_name)
     repo_metadata_df = pd.read_json(file_name)
-    timestamp = repo_metadata_df.updated_at.values.tolist()[0]
+    timestamp = repo_metadata_df.updated_at
     return timestamp
 
 
