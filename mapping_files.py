@@ -110,7 +110,7 @@ class ProcessNotebookData(object):
 
     def WriteTables(self, processed_df):
         libinfo_df = self.spark.read.csv("s3a://gauravdatabeamdata/LibraryInfo.csv", header=True, multiLine=True)
-        libraries_list = libinfo_df.Libraries.values.tolist()
+        libraries_list = libinfo_df.select(libinfo_df.Libraries).collect()
         for library in libraries_list:
             library_df = processed_df[processed_df.library==library].drop("library")
             print("Saving table %s into Postgres........................" %library)
