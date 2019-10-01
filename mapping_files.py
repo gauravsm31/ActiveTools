@@ -109,7 +109,7 @@ class ProcessNotebookData(object):
         connector.write(library_df, table, mode)
 
     def WriteTables(self, processed_df):
-        libinfo_df = spark.read.csv("s3a://gauravdatabeamdata/LibraryInfo.csv", header=True, multiLine=True)
+        libinfo_df = self.spark.read.csv("s3a://gauravdatabeamdata/LibraryInfo.csv", header=True, multiLine=True)
         libraries_list = libinfo_df.Libraries.values.tolist()
         for library in libraries_list:
             library_df = processed_df[processed_df.library==library].drop("library")
