@@ -114,7 +114,7 @@ class ProcessNotebookData(object):
         for lib in libraries_list:
             lib_df = processed_df.where(processed_df.library==str(lib)).select("datetime","lib_counts")
             print("Saving table %s into Postgres........................" %lib)
-            self.write_to_postgres(lib_df,lib)
+            self.write_to_postgres(lib_df,str(lib))
 
     def run(self, notebooks_folder):
 
