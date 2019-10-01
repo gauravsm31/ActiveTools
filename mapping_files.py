@@ -12,6 +12,7 @@ import boto3
 from pyspark.sql.functions import udf, expr, concat, col
 import pandas as pd
 import datetime
+import json
 
 
 class ProcessNotebookData(object):
@@ -195,9 +196,15 @@ def AttachTimestamp(repo_id,s3_res,current_bucket):
     key = str(repo_metadata_path)[25:]
     file_name = "repo_" + repo_id + ".json"
     s3_res.Bucket(current_bucket).download_file(key,file_name)
-    repo_metadata_df = pd.read_json(file_name,typ='series')
-    repo_metadata_df.to_frame('count')
-    timestamp = repo_metadata_df["updated_at"].values[0]
+    #repo_metadata_df = pd.read_json(file_name)
+
+    with open(file_name, 'r') as myfile:
+        data=myfile.read()
+
+    obj = json.loads(data)
+
+    timestamp = str(obj['updated_at'])
+    #timestamp = repo_metadata_df["updated_at"].values[0]
     return timestamp
 
 
