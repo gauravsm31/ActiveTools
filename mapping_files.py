@@ -114,7 +114,7 @@ class ProcessNotebookData(object):
         for library in libraries_list:
             library_df = processed_df[processed_df.library==library].drop("library")
             print("Saving table %s into Postgres........................" %library)
-            self.write_to_postgres(library_df,library)      
+            self.write_to_postgres(library_df,library)
 
     def run(self, notebooks_folder):
 
@@ -137,8 +137,8 @@ class ProcessNotebookData(object):
         print("Sending files to process..................................")
         processed_df = self.NotebookMapper(nbURL_nbID_timestamp_df)
 
-        # print("Saving counts table into Postgres...")
-        # self.write_to_postgres(processed_df, "lib_counts")
+        print("Splitting Into Library Tables.............................")
+        self.WriteTables(processed_df)
 
         print("Saved To Postgres .......................................")
 
