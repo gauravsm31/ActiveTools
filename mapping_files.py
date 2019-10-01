@@ -195,11 +195,12 @@ def AttachTimestamp(repo_id,s3_res,current_bucket):
     s3_res.Bucket(current_bucket).download_file(key,file_name)
     repo_metadata_df = pd.read_json(file_name)
     timestamp = repo_metadata_df["updated_at"].values[0]
+    timestamp = timestamp.split(".")[0]
     return timestamp
 
 
 def GetYearMonth(file_timestamp):
-    d = datetime.datetime.strptime(str(file_timestamp),'%Y-%m-%d %H:%M:%S.%f')
+    d = datetime.datetime.strptime(str(file_timestamp),'%Y-%m-%dT%H:%M:%S')
     new_format = "%Y-%m"
     return d.strftime(new_format)
 
