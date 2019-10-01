@@ -168,10 +168,10 @@ def find_imports(toCheck):
     importedItems = []
     with open(toCheck, 'r') as pyFile:
         for line in pyFile:
-            # ignore comments
-            line = line.strip().strip(',').strip('"').strip('n').strip('\\').partition("#")[0].partition(" as ")[0].split(' ')
             if line == []:
                 pass
+            # ignore comments
+            line = line.strip().strip(',').strip('"').strip('n').strip('\\').partition("#")[0].partition(" as ")[0].split(' ')
             else:
                 if line[0] == "import":
                     for imported in line[1:]:
@@ -183,12 +183,13 @@ def find_imports(toCheck):
                         else:
                             pass
                         importedItems.append(imported)
-                if line[0] == "from" and line[2] == "import":
-                    imported = line[1]
-                    if "." in imported:
-                        imported = imported.split('.')[0]
-                    else:
-                        pass
+                if len(line) > 2:
+                    if line[0] == "from" and line[2] == "import":
+                        imported = line[1]
+                        if "." in imported:
+                            imported = imported.split('.')[0]
+                        else:
+                            pass
                     importedItems.append(imported)
     importedItems = list(dict.fromkeys(importedItems))
     print(importedItems)
@@ -248,7 +249,7 @@ def ProcessEachFile(file_info):
     file_date = GetYearMonth(file_timestamp)
 
     # Get Libraries to Analyse Trends
-    LibInfoFile = 'LibraryInfo.csv'
+    LibInfoFile = './LibraryInfo.csv'
     s3_res.Bucket(current_bucket).download_file(LibInfoFile,LibInfoFile)
     lib_df = pd.read_csv(LibInfoFile)
 
