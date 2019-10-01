@@ -101,20 +101,23 @@ class ProcessNotebookData(object):
 
         return processed_df
 
-    def write_to_postgres(self, library_df, table_name):
+    def write_to_postgres(self, library_df, table_name, connector):
         print('Writing in Postgres Func ..................................')
         table = table_name
         mode = "append"
-        connector = postgres.PostgresConnector()
         connector.write(library_df, table, mode)
 
     def WriteTables(self, processed_df):
         libinfo_df = self.spark.read.csv("s3a://gauravdatabeamdata/LibraryInfo.csv", header=True, multiLine=True)
         libraries_list = libinfo_df.select(libinfo_df.Libraries).collect()
+
+        print("Getting postgre connector..............................")
+        connector = postgres.PostgresConnector()
+
         for lib in libraries_list:
             lib_df = processed_df.where(processed_df.library==str(lib)).select("datetime","lib_counts")
             print("Saving table %s into Postgres........................" %lib)
-            self.write_to_postgres(lib_df,str(lib))
+            self.write_to_postgres(lib_df,str(lib),connector)
 
     def run(self, notebooks_folder):
 
