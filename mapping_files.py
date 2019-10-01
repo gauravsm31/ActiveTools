@@ -107,15 +107,31 @@ class ProcessNotebookData(object):
         mode = "append"
         connector.write(library_df, table, mode)
 
+    # def WriteTables(self, processed_df):
+    #     libinfo_df = self.spark.read.csv("s3a://gauravdatabeamdata/LibraryInfo.csv", header=True, multiLine=True)
+    #     libraries_list = libinfo_df.select(libinfo_df.Libraries).collect()
+    #
+    #     print("Getting postgre connector..............................")
+    #     connector = postgres.PostgresConnector()
+    #
+    #     for lib_link in libraries_list:
+    #         lib = lib_link.Libraries
+    #         print(lib)
+    #         lib_df = processed_df.where(processed_df.library==str(lib)).select("datetime","lib_counts")
+    #         if  len(lib_df.head(1)) > 0:
+    #             print("Saving table %s into Postgres........................" %lib)
+    #             self.write_to_postgres(lib_df,str(lib),connector)
+    #         else:
+    #             continue
+
     def WriteTables(self, processed_df):
-        libinfo_df = self.spark.read.csv("s3a://gauravdatabeamdata/LibraryInfo.csv", header=True, multiLine=True)
-        libraries_list = libinfo_df.select(libinfo_df.Libraries).collect()
+        libinfo_df = pd.read_csv("s3a://gauravdatabeamdata/LibraryInfo.csv")
+        libraries_list = libinfo_df.Libraries.values.tolist()
 
         print("Getting postgre connector..............................")
         connector = postgres.PostgresConnector()
 
-        for lib_link in libraries_list:
-            lib = lib_link.Libraries
+        for lib in libraries_list:
             print(lib)
             lib_df = processed_df.where(processed_df.library==str(lib)).select("datetime","lib_counts")
             if  len(lib_df.head(1)) > 0:
@@ -125,8 +141,6 @@ class ProcessNotebookData(object):
                 continue
 
     def run(self):
-
-        notebooks_folder = "sample_data/data/test_notebooks/"
 
         print("batch_run_folder: ", notebooks_folder)
         file_list = self.getNotebookFileLocations()
@@ -234,6 +248,7 @@ def ProcessEachFile(file_info):
 
 
 def main():
+    notebooks_folder = "sample_data/data/test_notebooks/"
     proc = ProcessNotebookData(notebooks_folder)
     proc.run(notebooks_folder)
 
