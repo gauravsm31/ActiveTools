@@ -50,7 +50,7 @@ class ProcessNotebookData(object):
                 break
             else:
                 for key in s3_result['Contents']:
-                    file_list.append(key['Key'])
+                    file_list.append("s3a://" + bucket_name + "/" + key['Key'])
                 print("List count = " + str(len(file_list)))
 
         return file_list[1:]
