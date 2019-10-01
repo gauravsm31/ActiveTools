@@ -203,7 +203,7 @@ def AttachTimestamp(repo_id,s3_res,current_bucket):
 
     obj = json.loads(data)
 
-    if hasattr(obj,'updated_at'):
+    if 'updated_at' in obj:
         timestamp = str(obj['updated_at'])
         return timestamp
     else:
