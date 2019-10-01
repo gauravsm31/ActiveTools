@@ -42,10 +42,6 @@ class ProcessNotebookData(object):
         for key in s3_result['Contents']:
             file_list_1000.append("s3a://" + bucket_name + "/" + key['Key'])
         print("List count = " + str(len(file_list)))
-
-        for i in range(5):
-            print(file_list_1000[len(file_list_1000)-1-i])
-
         file_list.extend(file_list_1000)
 
         while s3_result['IsTruncated']:
@@ -58,8 +54,6 @@ class ProcessNotebookData(object):
                 for key in s3_result['Contents']:
                     file_list_1000.append("s3a://" + bucket_name + "/" + key['Key'])
                 print("List count = " + str(len(file_list)))
-                for i in range(5):
-                    print(file_list_1000[len(file_list_1000)-1-i])
                 file_list.extend(file_list_1000)
 
         return file_list
@@ -146,7 +140,7 @@ class ProcessNotebookData(object):
         files_urls_df = self.NotebookUrlListToDF(file_list)
 
         print("Getting notebook id - repo id information ................................")
-        nbURL_ndID_repoID_df = self.AttachRepoID(files_urls_df)
+        nbURL_nbID_repoID_df = self.AttachRepoID(files_urls_df)
 
         #print("Getting Timestamp for each notebook .........................................")
         #nbURL_nbID_timestamp_df = self.AttachTimestamp(nbURL_ndID_repoID_df)
@@ -155,7 +149,7 @@ class ProcessNotebookData(object):
 
         # Process each file
         print("Sending files to process..................................")
-        processed_df = self.NotebookMapper(nbURL_ndID_repoID_df)
+        processed_df = self.NotebookMapper(nbURL_nbID_repoID_df)
 
         print("Splitting Into Library Tables.............................")
         self.WriteTables(processed_df)
