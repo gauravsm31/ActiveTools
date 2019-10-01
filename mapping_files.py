@@ -210,8 +210,8 @@ def AttachTimestamp(repo_id,s3_res,current_bucket):
 
 def GetYearMonth(file_timestamp):
     timestamp = str(file_timestamp)
-    timestamp = timestamp.split(".")[0]
-    d = datetime.datetime.strptime(timestamp,'%Y-%m-%dT%H:%M:%S')
+    #timestamp = timestamp.split(".")[0]
+    d = datetime.datetime.strptime(timestamp,'%Y-%m-%dT%H:%M:%SZ')
     new_format = "%Y-%m"
     return d.strftime(new_format)
 
