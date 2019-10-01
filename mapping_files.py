@@ -249,9 +249,10 @@ def ProcessEachFile(file_info):
     file_date = GetYearMonth(file_timestamp)
 
     # Get Libraries to Analyse Trends
-    LibInfoFile = './LibraryInfo.csv'
+    LibInfoFile = 'LibraryInfo.csv'
     s3_res.Bucket(current_bucket).download_file(LibInfoFile,LibInfoFile)
-    lib_df = pd.read_csv(LibInfoFile)
+    libinfo_filepath = './' + LibInfoFile
+    lib_df = pd.read_csv(libinfo_filepath)
 
     s3_res.Bucket(current_bucket).download_file(key,file_name)
     importedItems = find_imports(file_name)
