@@ -114,7 +114,8 @@ class ProcessNotebookData(object):
         print("Getting postgre connector..............................")
         connector = postgres.PostgresConnector()
 
-        for lib in libraries_list:
+        for lib_link in libraries_list:
+            lib = lib_link.libraries_list
             print(lib)
             lib_df = processed_df.where(processed_df.library==str(lib)).select("datetime","lib_counts")
             if  len(lib_df.head(1)) > 0:
