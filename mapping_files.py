@@ -248,14 +248,16 @@ def ProcessEachFile(file_info):
 
     file_date = GetYearMonth(file_timestamp)
 
-    # Get Libraries to Analyse Trends
-    LibInfoFile = os.path.basename('LibraryInfo.csv')
-    s3_res.Bucket(current_bucket).download_file(LibInfoFile,LibInfoFile)
-    lib_df = pd.read_csv(LibInfoFile)
-
     s3_res.Bucket(current_bucket).download_file(key,file_name)
     importedItems = find_imports(file_name)
 
+    # Get Libraries to Analyse Trends
+    LibInfoFile_local = os.path.basename('LibraryInfo.csv')
+    LibInfoFile_remote = os.path.basename('LibraryInfo.csv')
+    s3_res.Bucket(current_bucket).download_file(LibInfoFile_remote,LibInfoFile_local)
+    lib_df = pd.read_csv(LibInfoFile)
+
+    # Pick out libraries from imported libraries to return to main processor
     return_lib_list = lib_df.Libraries[lib_df['Libraries'].isin(importedItems)].values.tolist()
     if not return_lib_list:
         returndata.append((('nolibrary','nodate'),0))
