@@ -89,14 +89,19 @@ class parallel_processor(object):
         libinfo_df = self.spark.read.csv("s3a://gauravdatabeamdata/LibraryInfo.csv", header=True, multiLine=True)
         libraries_list = libinfo_df.select(libinfo_df.Libraries).collect()
 
+        liblist = []
+        for row in libraries_list:
+            liblist.append(str(row.Libraries))
+        collocatedlibs = GetCollocatedLibraries()
+        libs_indandcoll = collocatedlibs.GetLibraryPairs(liblist)
+
         print("Getting postgre connector..............................")
         connector = postgres.PostgresConnector()
 
-        for lib_link in libraries_list:
-            lib = lib_link.Libraries
-            print(lib)
+        for lib_ind_pair in libs_indandcoll:
+
             # pick out libraries which exist in processed dataframe
-            lib_df = processed_df.where(processed_df.library==str(lib)).select("datetime","lib_counts")
+            lib_df = processed_df.where(processed_df.library==lib_ind_pair).select("datetime","lib_counts")
 
             # save datetime(year-month), lib_counts(users) in a table for each library
             if  len(lib_df.head(1)) > 0:
