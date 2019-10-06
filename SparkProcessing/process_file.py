@@ -4,8 +4,6 @@ import os
 import pyspark
 import boto3
 import pandas as pd
-# import datetime
-# import json
 from timestamp import GetTimeStamp
 from imports import GetImportedLibraries
 from combinations import GetCollocatedLibraries

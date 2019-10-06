@@ -99,6 +99,9 @@ class parallel_processor(object):
         print("Getting postgre connector..............................")
         connector = postgres.PostgresConnector()
 
+        for item in libs_indandcoll:
+            print(item + '....................................................')
+
         for lib_ind_pair in libs_indandcoll:
 
             # pick out libraries which exist in processed dataframe
