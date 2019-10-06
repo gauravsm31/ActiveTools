@@ -8,7 +8,7 @@ import datetime
 
 class FileProcessor(object):
 
-    def find_imports(toCheck):
+    def find_imports(self, toCheck):
         """
         Given a filename, returns a list of modules imported by the program.
         This program does not run the code, so import statements
@@ -47,7 +47,7 @@ class FileProcessor(object):
         return importedItems
 
 
-    def AttachTimestamp(repo_id,s3_res,current_bucket):
+    def AttachTimestamp(self, repo_id,s3_res,current_bucket):
         repo_metadata_path = "s3a://gauravdatabeamdata/sample_data/data/repository_metadata/repo_" + repo_id + ".json"
         # repo_metadata_path = "s3a://gauravdatabeamdata/repository_metadata/repo_" + repo_id + ".json"
         key = str(repo_metadata_path)[25:]
@@ -70,7 +70,7 @@ class FileProcessor(object):
 
 
 
-    def GetYearMonth(file_timestamp):
+    def GetYearMonth(self, file_timestamp):
         timestamp = str(file_timestamp)
         #timestamp = timestamp.split(".")[0]
         d = datetime.datetime.strptime(timestamp,'%Y-%m-%dT%H:%M:%SZ')
@@ -78,7 +78,7 @@ class FileProcessor(object):
         return d.strftime(new_format)
 
 
-    def ProcessEachFile(file_info):
+    def ProcessEachFile(self, file_info):
 
         returndata = []
         s3_res = boto3.resource('s3')
@@ -91,15 +91,15 @@ class FileProcessor(object):
         file_name = os.path.basename(str(file_path))
         notebook_id = os.path.splitext(file_name)[0][3:]
 
-        file_timestamp = AttachTimestamp(str(file_info.repo_id),s3_res,current_bucket)
+        file_timestamp = self.AttachTimestamp(str(file_info.repo_id),s3_res,current_bucket)
         if file_timestamp == 'NoTimestamp':
             returndata.append((('nolibrary','nodate'),0))
             return returndata
 
-        file_date = GetYearMonth(file_timestamp)
+        file_date = self.GetYearMonth(file_timestamp)
 
         s3_res.Bucket(current_bucket).download_file(key,file_name)
-        importedItems = find_imports(file_name)
+        importedItems = self.find_imports(file_name)
 
         # Get Libraries to Analyse Trends
         LibInfoFile_local = os.path.basename('LibraryInfo.csv')
