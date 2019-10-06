@@ -45,8 +45,8 @@ class ProcessNotebookData(object):
         file_list_1000 = []
         for key in s3_result['Contents']:
             file_list_1000.append("s3a://" + bucket_name + "/" + key['Key'])
-        print("List count = " + str(len(file_list)))
         file_list.extend(file_list_1000)
+        print("List count = " + str(len(file_list)))
 
         while s3_result['IsTruncated']:
             continuation_key = s3_result['NextContinuationToken']
@@ -57,8 +57,8 @@ class ProcessNotebookData(object):
                 file_list_1000 = []
                 for key in s3_result['Contents']:
                     file_list_1000.append("s3a://" + bucket_name + "/" + key['Key'])
-                print("List count = " + str(len(file_list)))
                 file_list.extend(file_list_1000)
+                print("List count = " + str(len(file_list)))
 
         return file_list
 
