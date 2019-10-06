@@ -1,0 +1,16 @@
+Libraries,Category
+matplotlib,Visualization
+seaborn,Visualization
+plotly,Visualization
+numpy,Data Wrangling
+scipy,Data Wrangling
+pandas,Data Wrangling
+sklearn,Machine Learning
+eli5,Machine Learning
+xgboost,Machine Learning
+keras,Deep Learning
+tensorflow,Deep Learning
+theano,Deep Learning
+nltk,Natural Language Processing
+gensim,Natural Language Processing
+spacy,Natural Language Processing
