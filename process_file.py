@@ -14,16 +14,18 @@ class FileProcessor(object):
     def ProcessEachFile(self, file_info):
 
         returndata = []
-        s3_res = boto3.resource('s3')
 
+        s3_res = boto3.resource('s3')
         file_path = file_info.s3_url
         file_path = file_path.encode("utf-8")
         # strip off the starting s3a:// from the bucket
         current_bucket = os.path.dirname(str(file_path))[6:24]
+        # strip off the starting s3a://<bucket_name>/ the file path
         key = str(file_path)[25:]
         file_name = os.path.basename(str(file_path))
         notebook_id = os.path.splitext(file_name)[0][3:]
 
+        # Get timestamp for each notebook
         year_month = GetTimeStamp()
         file_timestamp = year_month.AttachTimestamp(str(file_info.repo_id),s3_res,current_bucket)
         if file_timestamp == 'NoTimestamp':
@@ -31,8 +33,8 @@ class FileProcessor(object):
             return returndata
         file_date = year_month.GetYearMonth(file_timestamp)
 
+        # Get list of imported libraries for each notebook
         libs_imported = GetImportedLibraries()
-        # s3_res.Bucket(current_bucket).download_file(key,file_name)
         importedItems = libs_imported.find_imports(file_name,s3_res,current_bucket,key)
 
         # Get Libraries to Analyse Trends

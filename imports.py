@@ -10,6 +10,7 @@ class GetImportedLibraries():
         """
         s3_res.Bucket(current_bucket).download_file(key,toCheck)
         importedItems = []
+        # Check for import statements in each line in the notebook
         with open(toCheck, 'r') as pyFile:
             for line in pyFile:
                 if line == []:
@@ -17,6 +18,7 @@ class GetImportedLibraries():
                 else:
                     # ignore comments
                     line = line.strip().strip(',').strip('"').strip('n').strip('\\').partition("#")[0].partition(" as ")[0].split(' ')
+                    # get libraries from 'import library1, library2,...' statements
                     if line[0] == "import":
                         for imported in line[1:]:
                             # remove commas - this doesn't check for commas if
@@ -27,6 +29,7 @@ class GetImportedLibraries():
                             else:
                                 pass
                             importedItems.append(imported)
+                    # get imported libraries from 'from library import ...' statements
                     if len(line) > 2:
                         if line[0] == "from" and line[2] == "import":
                             imported = line[1]

@@ -9,6 +9,7 @@ class ProcessNotebookData(object):
 
         print("batch_run_folder: ", parent_folder)
 
+        # Get list of filepaths from multiple folders to be processed in batch
         fpaths_collector = get_filepaths()
         file_list = []
         for notebooks_folder in notebooks_folder_names:
@@ -16,6 +17,7 @@ class ProcessNotebookData(object):
             files_inFolder = fpaths_collector.getNotebookFileLocations(folder_path)
             file_list.extend(files_inFolder)
 
+        # Process files in filepaths in parallel on a spark cluster
         parallel_compute = parallel_processor()
 
         # Get a dataframe with urls of filenames
@@ -23,14 +25,16 @@ class ProcessNotebookData(object):
         files_urls_df = parallel_compute.NotebookUrlListToDF(file_list)
         files_urls_df.show(10)
 
+        # Get repository ID for each notebook ID
         print("Getting notebook id - repo id information ................................")
         print(folder_path)
         nbURL_nbID_repoID_df = parallel_compute.AttachRepoID(files_urls_df,folder_path)
 
-        # Process each file
+        # Process each notebook file to get library,timestamp,users
         print("Sending files to process..................................")
         processed_df = parallel_compute.NotebookMapper(nbURL_nbID_repoID_df)
 
+        # Write timestamp,users information for each library into the database
         print("Splitting Into Library Tables.............................")
         parallel_compute.WriteTables(processed_df)
 
