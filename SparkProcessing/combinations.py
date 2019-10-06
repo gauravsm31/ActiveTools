@@ -12,6 +12,6 @@ class GetCollocatedLibraries(object):
         comb_list = list(combinations(lib_list_sorted, 2))
 
         for lib_pair in comb_list:
-            return_list.append(comb_list[0]+'-'+comb_list[1])
+            return_list.append(str(comb_list[0])+'-'+str(comb_list[1]))
 
         return return_list
