@@ -5,7 +5,7 @@ class GetCollocatedLibraries(object):
     def GetLibraryPairs(self, lib_list):
 
         return_list = lib_list
-        lib_list_sorted = lib_list.sort()
+        lib_list_sorted = sorted(lib_list)
         # get list of all subsets of length 2
         # to deal with duplicate subsets use
         # set(list(combinations(arr, r)))
