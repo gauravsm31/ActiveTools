@@ -4,7 +4,7 @@ def main():
     parent_folder = 'sample_data/data/'
 
     # notebooks_folder_names must have entries of same length
-    notebooks_folder_names = ['test_notebooks_1/','test_notebooks_2/']
+    notebooks_folder_names = ['notebooks/']
 
     # notebooks_folder = "notebooks_1/"
     proc = ProcessNotebookData()
