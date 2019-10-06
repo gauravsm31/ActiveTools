@@ -140,7 +140,8 @@ class ProcessNotebookData(object):
         file_list = []
         for notebooks_folder in notebooks_folder_names:
             folder_path = parent_folder + notebooks_folder
-            file_list.append(self.getNotebookFileLocations(folder_path))
+            files_inFolder = self.getNotebookFileLocations(folder_path)
+            file_list.extend(files_inFolder)
 
         # Get a dataframe with urls of filenames
         print("Converting file urls list to file urls dataframe .................................")
