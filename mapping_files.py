@@ -75,7 +75,7 @@ class ProcessNotebookData(object):
         len_path = 6 + len(self.bucket) + 1 + len(notebooks_folder_path)
         # val result = df.withColumn("cutted", expr("substring(value, 1, length(value)-1)"))
         files_urls_df = files_urls_df.withColumn("nb_id", expr("substring(s3_url, " + str(len_path+4) + ", length(s3_url)-" + str(len_path) + "-9)"))
-        files_urls_df.show(10)
+        files_urls_df.show(10   )
         files_urls_df = files_urls_df.join(repo_df,"nb_id")
         files_urls_df = files_urls_df.select([c for c in files_urls_df.columns if c in {'nb_id','s3_url','repo_id'}])
         return files_urls_df
@@ -145,6 +145,7 @@ class ProcessNotebookData(object):
         # Get a dataframe with urls of filenames
         print("Converting file urls list to file urls dataframe .................................")
         files_urls_df = self.NotebookUrlListToDF(file_list)
+        files_urls_df.show(10)
 
         print("Getting notebook id - repo id information ................................")
         print(folder_path)
