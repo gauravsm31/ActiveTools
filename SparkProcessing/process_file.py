@@ -8,6 +8,7 @@ import pandas as pd
 # import json
 from timestamp import GetTimeStamp
 from imports import GetImportedLibraries
+from combinations import GetCollocatedLibraries
 
 class FileProcessor(object):
 
@@ -49,7 +50,12 @@ class FileProcessor(object):
         if not return_lib_list:
             returndata.append((('nolibrary','nodate'),0))
         else:
-            for library in return_lib_list:
+            # Add pairs of libraries used together (collocated) to individual libraries list
+            addcollocatedlibs = GetCollocatedLibraries()
+            libs_ind_coll = addcollocatedlibs.GetLibraryPairs(return_lib_list)
+
+            #Add each individual library and collocated library pair to the final list
+            for library in libs_ind_coll:
                 returndata.append(((library,file_date),1))
 
         return returndata
