@@ -106,7 +106,7 @@ class parallel_processor(object):
 
             # save datetime(year-month), lib_counts(users) in a table for each library
             if  len(lib_df.head(1)) > 0:
-                print("Saving table %s into Postgres........................" %lib)
-                self.write_to_postgres(lib_df,str(lib),connector)
+                print("Saving table %s into Postgres........................" %lib_ind_pair)
+                self.write_to_postgres(lib_df,lib_ind_pair,connector)
             else:
                 continue
