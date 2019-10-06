@@ -51,8 +51,11 @@ class FileProcessor(object):
             returndata.append((('nolibrary','nodate'),0))
         else:
             # Add pairs of libraries used together (collocated) to individual libraries list
-            addcollocatedlibs = GetCollocatedLibraries()
-            libs_ind_coll = addcollocatedlibs.GetLibraryPairs(return_lib_list)
+            if len(return_lib_list)>1:
+                addcollocatedlibs = GetCollocatedLibraries()
+                libs_ind_coll = addcollocatedlibs.GetLibraryPairs(return_lib_list)
+            else:
+                libs_ind_coll = return_lib_list
 
             #Add each individual library and collocated library pair to the final list
             for library in libs_ind_coll:
