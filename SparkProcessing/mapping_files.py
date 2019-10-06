@@ -3,16 +3,11 @@ import postgres
 import sys
 from pyspark.sql import SparkSession
 from pyspark.sql import Row
-import os
 from pyspark.sql.types import StructType
 from pyspark.sql.types import StructField
 import pyspark
 from pyspark.sql.types import StringType
-import boto3
 from pyspark.sql.functions import udf, expr, concat, col
-import pandas as pd
-import datetime
-import json
 from process_file import FileProcessor
 
 
@@ -30,7 +25,6 @@ class parallel_processor(object):
         self.spark.sparkContext.addPyFile('imports.py')
 
         self.bucket = "gauravdatabeamdata"
-        # self.folder = notebooks_folder
 
 
     def NotebookUrlListToDF(self, file_list):
@@ -40,35 +34,38 @@ class parallel_processor(object):
         return files_urls_df
 
     def AttachRepoID(self, files_urls_df, notebooks_folder_path):
+
+        # Get repository ID for each notebook ID from a csv file which maps notebookID to repositoryID
         repo_df = self.spark.read.csv("s3a://gauravdatabeamdata/sample_data/data/csv/notebooks_sample.csv", header=True, multiLine=True, escape='"')
         # repo_df = self.spark.read.csv("s3a://gauravdatabeamdata/Summary_CSV_Data/csv/notebooks.csv", header=True, multiLine=True, escape='"')
+
+        # Get notebook ID from filepath using: val result = df.withColumn("cutted", expr("substring(value, 1, length(value)-1)"))
         len_path = 6 + len(self.bucket) + 1 + len(notebooks_folder_path)
-        # val result = df.withColumn("cutted", expr("substring(value, 1, length(value)-1)"))
         files_urls_df = files_urls_df.withColumn("nb_id", expr("substring(s3_url, " + str(len_path+4) + ", length(s3_url)-" + str(len_path) + "-9)"))
-        files_urls_df.show(10   )
+        files_urls_df.show(10)
+
+        # Join tables and pick out relevant columns
         files_urls_df = files_urls_df.join(repo_df,"nb_id")
         files_urls_df = files_urls_df.select([c for c in files_urls_df.columns if c in {'nb_id','s3_url','repo_id'}])
         return files_urls_df
 
     def NotebookMapper(self, files_urls_df):
 
-        process_file = FileProcessor()
-
-
         print('got file df ..................................')
 
-        # Farm out juoyter notebook files to Spark workers with a flatMap
+        # Farm out juoyter notebook files to Spark workers with a flatMap and
+        # aggregrate users for each month for each library
+        process_file = FileProcessor()
         processed_rdd = files_urls_df.rdd.flatMap(process_file.ProcessEachFile) \
                         .filter(lambda x: x[0][0] != 'nolibrary') \
                         .reduceByKey(lambda n,m: n+m) \
                         .map(lambda x: (x[0][0],x[0][1],x[1]))
+        print('got processed rdd ..................................')
 
-
+        # Save processed rdd as a dataframe using the following schema:
         processed_schema = StructType([StructField("library", StringType(), False),
                                          StructField("datetime", StringType(), False ),
                                          StructField("lib_counts", StringType(), False )])
-
-        print('got processed rdd ..................................')
 
         processed_df = (
             processed_rdd \
@@ -86,6 +83,8 @@ class parallel_processor(object):
         connector.write(library_df, table, mode)
 
     def WriteTables(self, processed_df):
+
+        # Get list of libraries from S3 for which you want activity trends
         libinfo_df = self.spark.read.csv("s3a://gauravdatabeamdata/LibraryInfo.csv", header=True, multiLine=True)
         libraries_list = libinfo_df.select(libinfo_df.Libraries).collect()
 
@@ -95,7 +94,10 @@ class parallel_processor(object):
         for lib_link in libraries_list:
             lib = lib_link.Libraries
             print(lib)
+            # pick out libraries which exist in processed dataframe
             lib_df = processed_df.where(processed_df.library==str(lib)).select("datetime","lib_counts")
+
+            # save datetime(year-month), lib_counts(users) in a table for each library
             if  len(lib_df.head(1)) > 0:
                 print("Saving table %s into Postgres........................" %lib)
                 self.write_to_postgres(lib_df,str(lib),connector)

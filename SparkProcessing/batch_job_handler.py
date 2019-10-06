@@ -17,7 +17,8 @@ class ProcessNotebookData(object):
             files_inFolder = fpaths_collector.getNotebookFileLocations(folder_path)
             file_list.extend(files_inFolder)
 
-        # Process files in filepaths in parallel on a spark cluster
+        # Process files in filepaths in parallel on a spark cluster and
+        # write processed data to postgresql database
         parallel_compute = parallel_processor()
 
         # Get a dataframe with urls of filenames
