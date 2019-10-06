@@ -4,8 +4,9 @@ import os
 import pyspark
 import boto3
 import pandas as pd
-import datetime
-import json
+# import datetime
+# import json
+from timestamp import GetTimeStamp
 
 class FileProcessor(object):
 
@@ -48,35 +49,35 @@ class FileProcessor(object):
         return importedItems
 
 
-    def AttachTimestamp(self, repo_id,s3_res,current_bucket):
-        repo_metadata_path = "s3a://gauravdatabeamdata/sample_data/data/repository_metadata/repo_" + repo_id + ".json"
-        # repo_metadata_path = "s3a://gauravdatabeamdata/repository_metadata/repo_" + repo_id + ".json"
-        key = str(repo_metadata_path)[25:]
-        file_name = "repo_" + repo_id + ".json"
-        s3_res.Bucket(current_bucket).download_file(key,file_name)
-        #repo_metadata_df = pd.read_json(file_name)
-
-        with open(file_name, 'r') as myfile:
-            data=myfile.read()
-
-        obj = json.loads(data)
-
-        if 'updated_at' in obj:
-            timestamp = str(obj['updated_at'])
-            return timestamp
-        else:
-            return 'NoTimestamp'
-
-        #timestamp = repo_metadata_df["updated_at"].values[0]
-
-
-
-    def GetYearMonth(self, file_timestamp):
-        timestamp = str(file_timestamp)
-        #timestamp = timestamp.split(".")[0]
-        d = datetime.datetime.strptime(timestamp,'%Y-%m-%dT%H:%M:%SZ')
-        new_format = "%Y-%m"
-        return d.strftime(new_format)
+    # def AttachTimestamp(self, repo_id,s3_res,current_bucket):
+    #     repo_metadata_path = "s3a://gauravdatabeamdata/sample_data/data/repository_metadata/repo_" + repo_id + ".json"
+    #     # repo_metadata_path = "s3a://gauravdatabeamdata/repository_metadata/repo_" + repo_id + ".json"
+    #     key = str(repo_metadata_path)[25:]
+    #     file_name = "repo_" + repo_id + ".json"
+    #     s3_res.Bucket(current_bucket).download_file(key,file_name)
+    #     #repo_metadata_df = pd.read_json(file_name)
+    #
+    #     with open(file_name, 'r') as myfile:
+    #         data=myfile.read()
+    #
+    #     obj = json.loads(data)
+    #
+    #     if 'updated_at' in obj:
+    #         timestamp = str(obj['updated_at'])
+    #         return timestamp
+    #     else:
+    #         return 'NoTimestamp'
+    #
+    #     #timestamp = repo_metadata_df["updated_at"].values[0]
+    #
+    #
+    #
+    # def GetYearMonth(self, file_timestamp):
+    #     timestamp = str(file_timestamp)
+    #     #timestamp = timestamp.split(".")[0]
+    #     d = datetime.datetime.strptime(timestamp,'%Y-%m-%dT%H:%M:%SZ')
+    #     new_format = "%Y-%m"
+    #     return d.strftime(new_format)
 
 
     def ProcessEachFile(self, file_info):
@@ -92,12 +93,14 @@ class FileProcessor(object):
         file_name = os.path.basename(str(file_path))
         notebook_id = os.path.splitext(file_name)[0][3:]
 
-        file_timestamp = self.AttachTimestamp(str(file_info.repo_id),s3_res,current_bucket)
+        year_month = GetTimeStamp()
+
+        file_timestamp = year_month.AttachTimestamp(str(file_info.repo_id),s3_res,current_bucket)
         if file_timestamp == 'NoTimestamp':
             returndata.append((('nolibrary','nodate'),0))
             return returndata
 
-        file_date = self.GetYearMonth(file_timestamp)
+        file_date = year_month.GetYearMonth(file_timestamp)
 
         s3_res.Bucket(current_bucket).download_file(key,file_name)
         importedItems = self.find_imports(file_name)
