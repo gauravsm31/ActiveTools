@@ -4,27 +4,18 @@ from mapping_files import bucketextractor
 
 class ProcessNotebookData(object):
 
-    def __init__(self):
-        self.spark = SparkSession \
-            .builder \
-            .appName("LibraryInsights") \
-            .getOrCreate()
-
-        # Add modules
-        self.spark.sparkContext.addPyFile('process_file.py')
-        self.bucket = "gauravdatabeamdata"
-
     def run(self,parent_folder,notebooks_folder_names):
 
         print("batch_run_folder: ", parent_folder)
 
+        info_compiler = bucketextractor()
+
         file_list = []
         for notebooks_folder in notebooks_folder_names:
             folder_path = parent_folder + notebooks_folder
-            files_inFolder = self.getNotebookFileLocations(folder_path)
+            files_inFolder = info_compiler.getNotebookFileLocations(folder_path)
             file_list.extend(files_inFolder)
 
-        info_compiler = bucketextractor()
 
         # Get a dataframe with urls of filenames
         print("Converting file urls list to file urls dataframe .................................")

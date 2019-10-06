@@ -18,17 +18,17 @@ from process_file import FileProcessor
 
 class bucketextractor(object):
 
-    # def __init__(self):
-    #     self.spark = SparkSession \
-    #         .builder \
-    #         .appName("LibraryInsights") \
-    #         .getOrCreate()
-    #
-    #     # Add modules
-    #     self.spark.sparkContext.addPyFile('process_file.py')
-    #
-    #     self.bucket = "gauravdatabeamdata"
-    #     # self.folder = notebooks_folder
+    def __init__(self):
+        self.spark = SparkSession \
+            .builder \
+            .appName("LibraryInsights") \
+            .getOrCreate()
+
+        # Add modules
+        self.spark.sparkContext.addPyFile('process_file.py')
+
+        self.bucket = "gauravdatabeamdata"
+        # self.folder = notebooks_folder
 
 
     def getNotebookFileLocations(self, folder_path):
