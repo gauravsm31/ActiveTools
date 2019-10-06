@@ -249,7 +249,7 @@ def ProcessEachFile(file_info):
     LibInfoFile_local = os.path.basename('LibraryInfo.csv')
     LibInfoFile_remote = os.path.basename('LibraryInfo.csv')
     s3_res.Bucket(current_bucket).download_file(LibInfoFile_remote,LibInfoFile_local)
-    lib_df = pd.read_csv(LibInfoFile)
+    lib_df = pd.read_csv(LibInfoFile_local)
 
     # Pick out libraries from imported libraries to return to main processor
     return_lib_list = lib_df.Libraries[lib_df['Libraries'].isin(importedItems)].values.tolist()
