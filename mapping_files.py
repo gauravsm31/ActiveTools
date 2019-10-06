@@ -18,7 +18,7 @@ from process_file import FileProcessor
 
 class ProcessNotebookData(object):
 
-    def __init__(self, notebooks_folder):
+    def __init__(self):
         self.spark = SparkSession \
             .builder \
             .appName("LibraryInsights") \
