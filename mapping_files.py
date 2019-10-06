@@ -145,7 +145,8 @@ class ProcessNotebookData(object):
         files_urls_df = self.NotebookUrlListToDF(file_list)
 
         print("Getting notebook id - repo id information ................................")
-        nbURL_nbID_repoID_df = self.AttachRepoID(files_urls_df,parent_folder+notebooks_folder_names[0])
+        print(folder_path)
+        nbURL_nbID_repoID_df = self.AttachRepoID(files_urls_df,folder_path)
 
         #print("Getting Timestamp for each notebook .........................................")
         #nbURL_nbID_timestamp_df = self.AttachTimestamp(nbURL_ndID_repoID_df)
