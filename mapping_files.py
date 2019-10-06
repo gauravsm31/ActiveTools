@@ -45,7 +45,7 @@ class ProcessNotebookData(object):
         file_list_1000 = []
         for key in s3_result['Contents']:
             file_list_1000.append("s3a://" + bucket_name + "/" + key['Key'])
-        file_list.extend(file_list_1000)
+        file_list.extend(file_list_1000[1:])
         print("List count = " + str(len(file_list)))
 
         while s3_result['IsTruncated']:
@@ -69,10 +69,10 @@ class ProcessNotebookData(object):
         files_urls_df = self.spark.createDataFrame(url_list_rdd, url_list_schema)
         return files_urls_df
 
-    def AttachRepoID(self, files_urls_df, notebooks_folder_name):
+    def AttachRepoID(self, files_urls_df, notebooks_folder_path):
         repo_df = self.spark.read.csv("s3a://gauravdatabeamdata/sample_data/data/csv/notebooks_sample.csv", header=True, multiLine=True, escape='"')
         # repo_df = self.spark.read.csv("s3a://gauravdatabeamdata/Summary_CSV_Data/csv/notebooks.csv", header=True, multiLine=True, escape='"')
-        len_path = 6 + len(self.bucket) + 1 + len(notebooks_folder_name)
+        len_path = 6 + len(self.bucket) + 1 + len(notebooks_folder_path)
         files_urls_df = files_urls_df.withColumn("nb_id", expr("substring(s3_url, " + str(len_path+4) + ", length(s3_url)-" + str(len_path) + "-9)"))
         files_urls_df = files_urls_df.join(repo_df,"nb_id")
         files_urls_df = files_urls_df.select([c for c in files_urls_df.columns if c in {'nb_id','s3_url','repo_id'}])
@@ -145,7 +145,7 @@ class ProcessNotebookData(object):
         files_urls_df = self.NotebookUrlListToDF(file_list)
 
         print("Getting notebook id - repo id information ................................")
-        nbURL_nbID_repoID_df = self.AttachRepoID(files_urls_df,notebooks_folder_names[0])
+        nbURL_nbID_repoID_df = self.AttachRepoID(files_urls_df,parent_folder+notebooks_folder_names[0])
 
         #print("Getting Timestamp for each notebook .........................................")
         #nbURL_nbID_timestamp_df = self.AttachTimestamp(nbURL_ndID_repoID_df)
@@ -163,7 +163,7 @@ class ProcessNotebookData(object):
 
 
 def main():
-    parent_folder = "sample_data/data/"
+    parent_folder = 'sample_data/data/'
     # notebooks_folder_names must have entries of similar length
     notebooks_folder_names = ['test_notebooks_1/','test_notebooks_2/']
     # notebooks_folder = "notebooks_1/"
