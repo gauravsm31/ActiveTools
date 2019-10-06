@@ -24,6 +24,9 @@ class ProcessNotebookData(object):
             .appName("LibraryInsights") \
             .getOrCreate()
 
+        # Add modules
+        self.spark.sparkContext.addPyFile('process_file.py')
+
         self.bucket = "gauravdatabeamdata"
         self.folder = notebooks_folder
 
