@@ -27,6 +27,7 @@ class parallel_processor(object):
         # Add modules
         self.spark.sparkContext.addPyFile('process_file.py')
         self.spark.sparkContext.addPyFile('timestamp.py')
+        self.spark.sparkContext.addPyFile('imports.py')
 
         self.bucket = "gauravdatabeamdata"
         # self.folder = notebooks_folder

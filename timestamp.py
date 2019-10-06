@@ -2,7 +2,6 @@ import datetime
 import json
 import boto3
 
-
 class GetTimeStamp(object):
 
     def AttachTimestamp(self, repo_id,s3_res,current_bucket):
@@ -23,9 +22,6 @@ class GetTimeStamp(object):
             return timestamp
         else:
             return 'NoTimestamp'
-
-        #timestamp = repo_metadata_df["updated_at"].values[0]
-
 
 
     def GetYearMonth(self, file_timestamp):
