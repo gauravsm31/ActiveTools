@@ -16,19 +16,19 @@ import json
 from process_file import FileProcessor
 
 
-class ProcessNotebookData(object):
+class bucketextractor(object):
 
-    def __init__(self):
-        self.spark = SparkSession \
-            .builder \
-            .appName("LibraryInsights") \
-            .getOrCreate()
-
-        # Add modules
-        self.spark.sparkContext.addPyFile('process_file.py')
-
-        self.bucket = "gauravdatabeamdata"
-        # self.folder = notebooks_folder
+    # def __init__(self):
+    #     self.spark = SparkSession \
+    #         .builder \
+    #         .appName("LibraryInsights") \
+    #         .getOrCreate()
+    #
+    #     # Add modules
+    #     self.spark.sparkContext.addPyFile('process_file.py')
+    #
+    #     self.bucket = "gauravdatabeamdata"
+    #     # self.folder = notebooks_folder
 
 
     def getNotebookFileLocations(self, folder_path):
@@ -133,38 +133,38 @@ class ProcessNotebookData(object):
                 continue
 
 
-    def run(self,parent_folder,notebooks_folder_names):
-
-        print("batch_run_folder: ", parent_folder)
-
-        file_list = []
-        for notebooks_folder in notebooks_folder_names:
-            folder_path = parent_folder + notebooks_folder
-            files_inFolder = self.getNotebookFileLocations(folder_path)
-            file_list.extend(files_inFolder)
-
-        # Get a dataframe with urls of filenames
-        print("Converting file urls list to file urls dataframe .................................")
-        files_urls_df = self.NotebookUrlListToDF(file_list)
-        files_urls_df.show(10)
-
-        print("Getting notebook id - repo id information ................................")
-        print(folder_path)
-        nbURL_nbID_repoID_df = self.AttachRepoID(files_urls_df,folder_path)
-
-        #print("Getting Timestamp for each notebook .........................................")
-        #nbURL_nbID_timestamp_df = self.AttachTimestamp(nbURL_ndID_repoID_df)
-
-        nbURL_nbID_repoID_df.show(10)
-
-        # Process each file
-        print("Sending files to process..................................")
-        processed_df = self.NotebookMapper(nbURL_nbID_repoID_df)
-
-        print("Splitting Into Library Tables.............................")
-        self.WriteTables(processed_df)
-
-        print("Saved To Postgres .......................................")
+    # def run(self,parent_folder,notebooks_folder_names):
+    #
+    #     print("batch_run_folder: ", parent_folder)
+    #
+    #     file_list = []
+    #     for notebooks_folder in notebooks_folder_names:
+    #         folder_path = parent_folder + notebooks_folder
+    #         files_inFolder = self.getNotebookFileLocations(folder_path)
+    #         file_list.extend(files_inFolder)
+    #
+    #     # Get a dataframe with urls of filenames
+    #     print("Converting file urls list to file urls dataframe .................................")
+    #     files_urls_df = self.NotebookUrlListToDF(file_list)
+    #     files_urls_df.show(10)
+    #
+    #     print("Getting notebook id - repo id information ................................")
+    #     print(folder_path)
+    #     nbURL_nbID_repoID_df = self.AttachRepoID(files_urls_df,folder_path)
+    #
+    #     #print("Getting Timestamp for each notebook .........................................")
+    #     #nbURL_nbID_timestamp_df = self.AttachTimestamp(nbURL_ndID_repoID_df)
+    #
+    #     nbURL_nbID_repoID_df.show(10)
+    #
+    #     # Process each file
+    #     print("Sending files to process..................................")
+    #     processed_df = self.NotebookMapper(nbURL_nbID_repoID_df)
+    #
+    #     print("Splitting Into Library Tables.............................")
+    #     self.WriteTables(processed_df)
+    #
+    #     print("Saved To Postgres .......................................")
 
 
 # def main():
