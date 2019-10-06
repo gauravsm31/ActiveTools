@@ -28,13 +28,13 @@ class ProcessNotebookData(object):
         self.spark.sparkContext.addPyFile('process_file.py')
 
         self.bucket = "gauravdatabeamdata"
-        self.folder = notebooks_folder
+        # self.folder = notebooks_folder
 
 
-    def getNotebookFileLocations(self):
+    def getNotebookFileLocations(self, folder_path):
 
         bucket_name = self.bucket
-        prefix = self.folder
+        prefix = folder_path
         s3_conn = boto3.client('s3')
         s3_result = s3_conn.list_objects_v2(Bucket=bucket_name, Prefix=prefix, Delimiter = "/")
 
@@ -69,10 +69,10 @@ class ProcessNotebookData(object):
         files_urls_df = self.spark.createDataFrame(url_list_rdd, url_list_schema)
         return files_urls_df
 
-    def AttachRepoID(self, files_urls_df):
+    def AttachRepoID(self, files_urls_df, notebooks_folder_name):
         repo_df = self.spark.read.csv("s3a://gauravdatabeamdata/sample_data/data/csv/notebooks_sample.csv", header=True, multiLine=True, escape='"')
         # repo_df = self.spark.read.csv("s3a://gauravdatabeamdata/Summary_CSV_Data/csv/notebooks.csv", header=True, multiLine=True, escape='"')
-        len_path = 6 + len(self.bucket) + 1 + len(self.folder)
+        len_path = 6 + len(self.bucket) + 1 + len(notebooks_folder_name)
         files_urls_df = files_urls_df.withColumn("nb_id", expr("substring(s3_url, " + str(len_path+4) + ", length(s3_url)-" + str(len_path) + "-9)"))
         files_urls_df = files_urls_df.join(repo_df,"nb_id")
         files_urls_df = files_urls_df.select([c for c in files_urls_df.columns if c in {'nb_id','s3_url','repo_id'}])
@@ -131,17 +131,21 @@ class ProcessNotebookData(object):
                 continue
 
 
-    def run(self,notebooks_folder):
+    def run(self,parent_folder,notebooks_folder_names):
 
-        print("batch_run_folder: ", notebooks_folder)
-        file_list = self.getNotebookFileLocations()
+        print("batch_run_folder: ", parent_folder)
+
+        file_list = []
+        for notebooks_folder in notebooks_folder_names:
+            folder_path = parent_folder + notebooks_folder
+            file_list.append(self.getNotebookFileLocations(folder_path))
 
         # Get a dataframe with urls of filenames
         print("Converting file urls list to file urls dataframe .................................")
         files_urls_df = self.NotebookUrlListToDF(file_list)
 
         print("Getting notebook id - repo id information ................................")
-        nbURL_nbID_repoID_df = self.AttachRepoID(files_urls_df)
+        nbURL_nbID_repoID_df = self.AttachRepoID(files_urls_df,notebooks_folder_names[0])
 
         #print("Getting Timestamp for each notebook .........................................")
         #nbURL_nbID_timestamp_df = self.AttachTimestamp(nbURL_ndID_repoID_df)
@@ -159,9 +163,11 @@ class ProcessNotebookData(object):
 
 
 def main():
-    notebooks_folder = "sample_data/data/test_notebooks_1/"
+    parent_folder = "sample_data/data/"
+    # notebooks_folder_names must have entries of similar length
+    notebooks_folder_names = ['test_notebooks_1/','test_notebooks_2/']
     # notebooks_folder = "notebooks_1/"
-    proc = ProcessNotebookData(notebooks_folder)
-    proc.run(notebooks_folder)
+    proc = ProcessNotebookData()
+    proc.run(parent_folder,notebooks_folder_names)
 
 main()
