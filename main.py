@@ -1,4 +1,4 @@
-import ProcessNotebookData
+from mapping_files import ProcessNotebookData
 
 def main():
     parent_folder = 'sample_data/data/'
