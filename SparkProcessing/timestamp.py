@@ -7,8 +7,8 @@ class GetTimeStamp(object):
     def AttachTimestamp(self, repo_id,s3_res,current_bucket):
 
         # Location in S3 where repository metadata json files are located
-        repo_metadata_path = "s3a://gauravdatabeamdata/sample_data/data/repository_metadata/repo_" + repo_id + ".json"
-        # repo_metadata_path = "s3a://gauravdatabeamdata/repository_metadata/repo_" + repo_id + ".json"
+        # repo_metadata_path = "s3a://gauravdatabeamdata/sample_data/data/repository_metadata/repo_" + repo_id + ".json"
+        repo_metadata_path = "s3a://gauravdatabeamdata/repository_metadata/repo_" + repo_id + ".json"
 
         # Download repo json file for each notebook ID
         key = str(repo_metadata_path)[25:]

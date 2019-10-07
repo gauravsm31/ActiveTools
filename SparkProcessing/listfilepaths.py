@@ -22,7 +22,7 @@ class get_filepaths(object):
         file_list_1000 = []
         for key in s3_result['Contents']:
             file_list_1000.append("s3a://" + bucket_name + "/" + key['Key'])
-        file_list.extend(file_list_1000[1:])
+        file_list.extend(file_list_1000)
         print("List count = " + str(len(file_list)))
 
         # If folder has more than 1000 files, continue reading filepaths untill all filepaths are read

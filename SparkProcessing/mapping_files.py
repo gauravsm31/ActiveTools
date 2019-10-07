@@ -38,8 +38,8 @@ class parallel_processor(object):
     def AttachRepoID(self, files_urls_df, notebooks_folder_path):
 
         # Get repository ID for each notebook ID from a csv file which maps notebookID to repositoryID
-        repo_df = self.spark.read.csv("s3a://gauravdatabeamdata/sample_data/data/csv/notebooks_sample.csv", header=True, multiLine=True, escape='"')
-        # repo_df = self.spark.read.csv("s3a://gauravdatabeamdata/Summary_CSV_Data/csv/notebooks.csv", header=True, multiLine=True, escape='"')
+        # repo_df = self.spark.read.csv("s3a://gauravdatabeamdata/sample_data/data/csv/notebooks_sample.csv", header=True, multiLine=True, escape='"')
+        repo_df = self.spark.read.csv("s3a://gauravdatabeamdata/Summary_CSV_Data/csv/notebooks.csv", header=True, multiLine=True, escape='"')
 
         # Get notebook ID from filepath using: val result = df.withColumn("cutted", expr("substring(value, 1, length(value)-1)"))
         len_path = 6 + len(self.bucket) + 1 + len(notebooks_folder_path)

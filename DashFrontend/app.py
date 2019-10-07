@@ -3,7 +3,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 import sqlalchemy
 from sqlalchemy.dialects import postgresql
 import pandas as pd
@@ -11,6 +11,7 @@ import psycopg2
 import sys
 import os
 from flask import Flask
+from itertools import combinations
 
 def connect():
     #Returns a connection and a metadata object
@@ -22,42 +23,36 @@ def connect():
     port = 5432
     url = 'postgresql://{}:{}@{}:{}/{}'
     url = url.format(user, password, host, port, db)
-
     # The return value of create_engine() is our connection object
     con = sqlalchemy.create_engine(url, client_encoding='utf8')
-
     # We then bind the connection to MetaData()
     meta = sqlalchemy.MetaData(bind=con, reflect=True)
-
     return con, meta
 
+def GetLibraryPairs(lib_list):
+    return_list = lib_list
+    lib_list_sorted = sorted(lib_list)
+    # get list of all subsets of length 2
+    # to deal with duplicate subsets use
+    # set(list(combinations(arr, r)))
+    comb_list = list(combinations(lib_list_sorted, 2))
+    for lib_pair in comb_list:
+        return_list.append(str(lib_pair[0])+'_'+str(lib_pair[1]))
+    return return_list
+
 con, meta = connect()
-
-df_matplotlib = pd.read_sql_query('SELECT * FROM matplotlib ORDER BY datetime ASC',con)
-df_plotly = pd.read_sql_query('SELECT * FROM plotly ORDER BY datetime ASC',con)
-df_seaborn = pd.read_sql_query('SELECT * FROM seaborn ORDER BY datetime ASC',con)
-
-df_numpy = pd.read_sql_query('SELECT * FROM numpy ORDER BY datetime ASC',con)
-df_scipy = pd.read_sql_query('SELECT * FROM scipy ORDER BY datetime ASC',con)
-df_pandas = pd.read_sql_query('SELECT * FROM pandas ORDER BY datetime ASC',con)
-
-df_sklearn = pd.read_sql_query('SELECT * FROM sklearn ORDER BY datetime ASC',con)
-df_eli5 = pd.read_sql_query('SELECT * FROM eli5 ORDER BY datetime ASC',con)
-df_xgboost = pd.read_sql_query('SELECT * FROM xgboost ORDER BY datetime ASC',con)
-
-df_nltk = pd.read_sql_query('SELECT * FROM nltk ORDER BY datetime ASC',con)
-df_gensim = pd.read_sql_query('SELECT * FROM gensim ORDER BY datetime ASC',con)
-df_spacy = pd.read_sql_query('SELECT * FROM spacy ORDER BY datetime ASC',con)
-
-df_keras = pd.read_sql_query('SELECT * FROM keras ORDER BY datetime ASC',con)
-df_tensorflow = pd.read_sql_query('SELECT * FROM tensorflow ORDER BY datetime ASC',con)
-df_theano = pd.read_sql_query('SELECT * FROM theano ORDER BY datetime ASC',con)
+df_libinfo = pd.read_csv('LibraryInfo.csv')
+lib_list = df_libinfo['Libraries'].values.tolist()
+all_libs_list = GetLibraryPairs(lib_list)
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app.config['suppress_callback_exceptions'] = True
 
-server = app.server
+available_categories = df_libinfo['Category'].unique()
+available_libraries = df_libinfo['Libraries'].unique()
+
 
 tabs_styles = {
     'height': '44px'
@@ -77,31 +72,76 @@ tab_selected_style = {
     'fontWeight': 'bold'
 }
 
+
+
 app.layout = html.Div([
-    html.H1('ActiveTools',style={'text-align': 'center', 'padding': '40px',}),
+    html.H1('ActiveTools',style={'text-align': 'center', 'padding': '20px',}),
+
     dcc.Tabs(id="tabs-navigation", value='tab-1', children=[
-        dcc.Tab(label='Visualization', value='tab-1', style=tab_style, selected_style=tab_selected_style),
-        dcc.Tab(label='Data Wrangling', value='tab-2', style=tab_style, selected_style=tab_selected_style),
-        dcc.Tab(label='Machine Learning', value='tab-3', style=tab_style, selected_style=tab_selected_style),
-        dcc.Tab(label='Natural Language Processing', value='tab-4', style=tab_style, selected_style=tab_selected_style),
-        dcc.Tab(label='Deep Learning', value='tab-5', style=tab_style, selected_style=tab_selected_style),
+        dcc.Tab(label='Explore Categories', value='tab-1', style=tab_style, selected_style=tab_selected_style),
+        dcc.Tab(label='Explore Collocation', value='tab-2', style=tab_style, selected_style=tab_selected_style),
     ], style=tabs_styles),
     html.Div(id='tabs-content-inline')
 ])
 
+
+
 @app.callback(Output('tabs-content-inline', 'children'),
               [Input('tabs-navigation', 'value')])
+
 def render_content(tab):
+
+    libs_in_category = df_libinfo[df_libinfo['Category']=='Visualization']['Libraries'].values.tolist()
+    table = libs_in_category[0]
+    qry = 'select * from ' + table + ' ORDER BY datetime ASC'
+    df_lib1 = pd.read_sql_query(qry,con)
+    table = libs_in_category[1]
+    qry = 'select * from ' + table + ' ORDER BY datetime ASC'
+    df_lib2 = pd.read_sql_query(qry,con)
+    table = libs_in_category[2]
+    qry = 'select * from ' + table + ' ORDER BY datetime ASC'
+    df_lib3 = pd.read_sql_query(qry,con)
+
+
+    libs_in_coll_category = df_libinfo[df_libinfo['Category']=='Data Wrangling']['Libraries'].values.tolist()
+    coll_cats = df_libinfo[df_libinfo['Category']!=df_libinfo[df_libinfo['Libraries']=='matplotlib'].iloc[0]['Category']]['Category'].unique()
+    tables = []
+    for lib in libs_in_coll_category:
+        if lib < 'matplotlib':
+            tables.append(lib+'_'+'matplotlib')
+        else:
+            tables.append('matplotlib'+'_'+lib)
+    table = tables[0]
+    qry = 'select * from ' + table + ' ORDER BY datetime ASC'
+    df_coll_lib1 = pd.read_sql_query(qry,con)
+    table = tables[1]
+    qry = 'select * from ' + table + ' ORDER BY datetime ASC'
+    df_coll_lib2 = pd.read_sql_query(qry,con)
+    table = tables[2]
+    qry = 'select * from ' + table + ' ORDER BY datetime ASC'
+    df_coll_lib3 = pd.read_sql_query(qry,con)
+
     if tab == 'tab-1':
         return html.Div([
-            html.H3('Libraries For Graphical Representation Of Data',style={'text-align': 'center','padding': '50px 0px 0px 0px'}),
+            html.H4('choose category',style={'text-align': 'center','padding': '20px 0px 0px 0px'}),
+
+                html.Div([
+                dcc.Dropdown(
+                    id='choose-category',
+                    options=[{'label': i, 'value': i} for i in available_categories],
+                    value='Visualization'
+                ),
+            ],
+            style={'width': '50%', 'text-align': 'center','marginLeft': '420px','display': 'inline-block','fontWeight': 'bold'}),
+            # ,'left': '50%','right': 'auto'
+
             dcc.Graph(
                 id='graph-1-tabs',
                 figure={
                     'data': [
-                    {'x': df_matplotlib['datetime'], 'y': df_matplotlib['lib_counts'], 'type': 'line', 'name': 'matplotlib'},
-                    {'x': df_plotly['datetime'], 'y': df_plotly['lib_counts'], 'type': 'line', 'name': 'plotly'},
-                    {'x': df_seaborn['datetime'], 'y': df_seaborn['lib_counts'], 'type': 'line', 'name': 'seaborn'}
+                    {'x': df_lib1['datetime'], 'y': df_lib1['lib_counts'], 'type': 'line', 'name': libs_in_category[0]},
+                    {'x': df_lib2['datetime'], 'y': df_lib2['lib_counts'], 'type': 'line', 'name': libs_in_category[1]},
+                    {'x': df_lib3['datetime'], 'y': df_lib3['lib_counts'], 'type': 'line', 'name': libs_in_category[2]}
                     ],
                     'layout':{
                             'xaxis':{
@@ -114,116 +154,144 @@ def render_content(tab):
                 }, style={'height': '600px'}
             )
         ], style={'marginLeft': '100px', 'marginRight': '100px'})
+
+
+
     elif tab == 'tab-2':
         return html.Div([
-            html.H3('Libraries For Transforming And Mapping Data',style={'text-align': 'center','padding': '50px 0px 0px 0px'}),
+            # html.H3('Visualize Trends On Active Users For Libraries in Different Categories',style={'text-align': 'center','padding': '20px 0px 0px 0px'}),
+
+                html.Div([
+                dcc.Dropdown(
+                    id='choose-library',
+                    options=[{'label': i, 'value': i} for i in available_libraries],
+                    value='matplotlib'
+                ),
+            ],
+            style={'width': '25%', 'text-align': 'center','display': 'inline-block','fontWeight': 'bold'}),
+
+                html.Div([
+                dcc.Dropdown(
+                    id='choose-collocation-category',
+                    options=[{'label': i, 'value': i} for i in coll_cats],
+                    value='Data Wrangling'
+                ),
+            ],
+            style={'width': '25%', 'text-align': 'center','display': 'inline-block','fontWeight': 'bold'}),
+
+
             dcc.Graph(
-                id='graph-1-tabs',
+                id='graph-2-tabs',
                 figure={
                     'data': [
-                    {'x': df_numpy['datetime'], 'y': df_numpy['lib_counts'], 'type': 'line', 'name': 'numpy'},
-                    {'x': df_scipy['datetime'], 'y': df_scipy['lib_counts'], 'type': 'line', 'name': 'scipy'},
-                    {'x': df_pandas['datetime'], 'y': df_pandas['lib_counts'], 'type': 'line', 'name': 'pandas'}
+                    {'x': df_coll_lib1['datetime'], 'y': df_coll_lib1['lib_counts'], 'type': 'line', 'name': tables[0]},
+                    {'x': df_coll_lib2['datetime'], 'y': df_coll_lib2['lib_counts'], 'type': 'line', 'name': tables[1]},
+                    {'x': df_coll_lib3['datetime'], 'y': df_coll_lib3['lib_counts'], 'type': 'line', 'name': tables[2]}
                     ],
                     'layout':{
                             'xaxis':{
-                                'title':'Date'
+                                'title':'Date',
                                 },
                             'yaxis':{
-                                'title':'Users'
-                                }
-                    }
-                }, style={'height': '600px'}
-            )
-        ], style={'marginLeft': '100px', 'marginRight': '100px'})
-    elif tab == 'tab-3':
-        return html.Div([
-            html.H3('Libraries For Learning From Data',style={'text-align': 'center','padding': '50px 0px 0px 0px'}),
-            dcc.Graph(
-                id='graph-1-tabs',
-                figure={
-                    'data': [
-                    {'x': df_sklearn['datetime'], 'y': df_sklearn['lib_counts'], 'type': 'line', 'name': 'sklearn'},
-                    {'x': df_eli5['datetime'], 'y': df_eli5['lib_counts'], 'type': 'line', 'name': 'eli5'},
-                    {'x': df_xgboost['datetime'], 'y': df_xgboost['lib_counts'], 'type': 'line', 'name': 'xgboost'}
-                    ],
-                    'layout':{
-                            'xaxis':{
-                                'title':'Date'
-                                },
-                            'yaxis':{
-                                'title':'Users'
-                                }
-                    }
-                }, style={'height': '600px'}
-            )
-        ], style={'marginLeft': '100px', 'marginRight': '100px'})
-    elif tab == 'tab-4':
-        return html.Div([
-            html.H3('Libraries For Understanding Human Language',style={'text-align': 'center','padding': '50px 0px 0px 0px'}),
-            dcc.Graph(
-                id='graph-1-tabs',
-                figure={
-                    'data': [
-                    {'x': df_nltk['datetime'], 'y': df_nltk['lib_counts'], 'type': 'line', 'name': 'nltk'},
-                    {'x': df_gensim['datetime'], 'y': df_gensim['lib_counts'], 'type': 'line', 'name': 'gensim'},
-                    {'x': df_spacy['datetime'], 'y': df_spacy['lib_counts'], 'type': 'line', 'name': 'spacy'}
-                    ],
-                    'layout':{
-                            'xaxis':{
-                                'title':'Date'
-                                },
-                            'yaxis':{
-                                'title':'Users'
-                                }
-                    }
-                }, style={'height': '600px'}
-            )
-        ], style={'marginLeft': '100px', 'marginRight': '100px'})
-    elif tab == 'tab-5':
-        return html.Div([
-            html.H3('Libraries For Doing Tasks That Require Human Intelligence',style={'text-align': 'center','padding': '50px 0px 0px 0px'}),
-            dcc.Graph(
-                id='graph-1-tabs',
-                figure={
-                    'data': [
-                    {'x': df_keras['datetime'], 'y': df_keras['lib_counts'], 'type': 'line', 'name': 'keras'},
-                    {'x': df_tensorflow['datetime'], 'y': df_tensorflow['lib_counts'], 'type': 'line', 'name': 'tensorflow'},
-                    {'x': df_theano['datetime'], 'y': df_theano['lib_counts'], 'type': 'line', 'name': 'theano'}
-                    ],
-                    'layout':{
-                            'xaxis':{
-                                'title':'Date'
-                                },
-                            'yaxis':{
-                                'title':'Users'
+                                'title':'Users',
                                 }
                     }
                 }, style={'height': '600px'}
             )
         ], style={'marginLeft': '100px', 'marginRight': '100px'})
 
-# app.layout = html.Div(children=[
-#     html.H1(children='ActiveTools'),
-#
-#     html.Div(children='''
-#         Dash: A web application framework for Python.
-#     '''),
-#
-#     dcc.Graph(
-#         id='example-graph',
-#         figure={
-#             'data': [
-#                 {'x': df_matplotlib['datetime'], 'y': df_matplotlib['lib_counts'], 'type': 'line', 'name': 'matplotlib'},
-#                 {'x': df_plotly['datetime'], 'y': df_plotly['lib_counts'], 'type': 'line', 'name': 'plotly'},
-#                 {'x': df_seaborn['datetime'], 'y': df_seaborn['lib_counts'], 'type': 'line', 'name': 'seaborn'}
-#             ],
-#             'layout': {
-#                 'title': 'Dash Data Visualization'
-#             }
-#         }
-#     )
-# ])
+
+@app.callback(Output('graph-1-tabs', 'figure'),
+              [Input('choose-category', 'value')])
+
+def update_graph(lib_category):
+
+    libs_in_category = df_libinfo[df_libinfo['Category']==lib_category]['Libraries'].values.tolist()
+
+    table = libs_in_category[0]
+    qry = 'select * from ' + table + ' ORDER BY datetime ASC'
+    df_lib1 = pd.read_sql_query(qry,con)
+
+    table = libs_in_category[1]
+    qry = 'select * from ' + table + ' ORDER BY datetime ASC'
+    df_lib2 = pd.read_sql_query(qry,con)
+
+    table = libs_in_category[2]
+    qry = 'select * from ' + table + ' ORDER BY datetime ASC'
+    df_lib3 = pd.read_sql_query(qry,con)
+
+    return {
+        'data': [
+        {'x': df_lib1['datetime'], 'y': df_lib1['lib_counts'], 'type': 'line', 'name': libs_in_category[0]},
+        {'x': df_lib2['datetime'], 'y': df_lib2['lib_counts'], 'type': 'line', 'name': libs_in_category[1]},
+        {'x': df_lib3['datetime'], 'y': df_lib3['lib_counts'], 'type': 'line', 'name': libs_in_category[2]}
+        ],
+        'layout':{
+                'xaxis':{
+                    'title':'Date',
+                    },
+                'yaxis':{
+                    'title':'Users',
+                    }
+        }
+    }
+
+@app.callback([Output('choose-collocation-category', 'options'),
+                Output('choose-collocation-category', 'value')],
+              [Input('choose-library', 'value')])
+
+def update_dropdown(libr):
+    coll_cats = df_libinfo[df_libinfo['Category']!=df_libinfo[df_libinfo['Libraries']==libr].iloc[0]['Category']]['Category'].unique()
+    return [{'label': i, 'value': i} for i in coll_cats], coll_cats[0]
+
+
+
+
+@app.callback(Output('graph-2-tabs', 'figure'),
+              [Input('choose-collocation-category', 'value')],
+              [State('choose-library', 'value')])
+
+def update_graph(coll_category,libr):
+    libs_in_coll_category = df_libinfo[df_libinfo['Category']==coll_category]['Libraries'].values.tolist()
+    coll_cats = df_libinfo[df_libinfo['Category']!=df_libinfo[df_libinfo['Libraries']==libr].iloc[0]['Category']]['Category'].unique()
+    tables = []
+    for lib in libs_in_coll_category:
+        if lib < libr:
+            tables.append(lib+'_'+libr)
+        else:
+            tables.append(libr+'_'+lib)
+
+    table = tables[0]
+    qry = 'select * from ' + table + ' ORDER BY datetime ASC'
+    df_coll_lib1 = pd.read_sql_query(qry,con)
+
+    table = tables[1]
+    qry = 'select * from ' + table + ' ORDER BY datetime ASC'
+    df_coll_lib2 = pd.read_sql_query(qry,con)
+
+    table = tables[2]
+    qry = 'select * from ' + table + ' ORDER BY datetime ASC'
+    df_coll_lib3 = pd.read_sql_query(qry,con)
+
+
+    return {
+        'data': [
+        {'x': df_coll_lib1['datetime'], 'y': df_coll_lib1['lib_counts'], 'type': 'line', 'name': tables[0]},
+        {'x': df_coll_lib2['datetime'], 'y': df_coll_lib2['lib_counts'], 'type': 'line', 'name': tables[1]},
+        {'x': df_coll_lib3['datetime'], 'y': df_coll_lib3['lib_counts'], 'type': 'line', 'name': tables[2]}
+        ],
+        'layout':{
+                'xaxis':{
+                    'title':'Date',
+                    },
+                'yaxis':{
+                    'title':'Users',
+                    }
+        }
+    }
+
+
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)
