@@ -4,7 +4,7 @@ import boto3
 
 class GetTimeStamp(object):
 
-    def AttachTimestamp(self, repo_id,s3_res,current_bucket):
+    def AttachTimestamp(self,repo_id,s3_res,current_bucket):
 
         # Location in S3 where repository metadata json files are located
         # repo_metadata_path = "s3a://gauravdatabeamdata/sample_data/data/repository_metadata/repo_" + repo_id + ".json"
