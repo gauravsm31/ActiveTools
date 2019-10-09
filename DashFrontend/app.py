@@ -92,33 +92,39 @@ app.layout = html.Div([
 def render_content(tab):
 
     libs_in_category = df_libinfo[df_libinfo['Category']=='Visualization']['Libraries'].values.tolist()
+
     table = libs_in_category[0]
-    qry = 'select * from ' + table + ' ORDER BY datetime ASC'
+    qry = 'select datetime,SUM(CAST(lib_counts AS int)) as users from ' + table + ' GROUP BY datetime ORDER BY datetime ASC'
     df_lib1 = pd.read_sql_query(qry,con)
+
     table = libs_in_category[1]
-    qry = 'select * from ' + table + ' ORDER BY datetime ASC'
+    qry = 'select datetime,SUM(CAST(lib_counts AS int)) as users from ' + table + ' GROUP BY datetime ORDER BY datetime ASC'
     df_lib2 = pd.read_sql_query(qry,con)
+    
     table = libs_in_category[2]
-    qry = 'select * from ' + table + ' ORDER BY datetime ASC'
+    qry = 'select datetime,SUM(CAST(lib_counts AS int)) as users from ' + table + ' GROUP BY datetime ORDER BY datetime ASC'
     df_lib3 = pd.read_sql_query(qry,con)
 
 
     libs_in_coll_category = df_libinfo[df_libinfo['Category']=='Data Wrangling']['Libraries'].values.tolist()
     coll_cats = df_libinfo[df_libinfo['Category']!=df_libinfo[df_libinfo['Libraries']=='matplotlib'].iloc[0]['Category']]['Category'].unique()
     tables = []
+    lib_main = 'matplotlib'
     for lib in libs_in_coll_category:
         if lib < 'matplotlib':
             tables.append(lib+'_'+'matplotlib')
         else:
             tables.append('matplotlib'+'_'+lib)
     table = tables[0]
-    qry = 'select * from ' + table + ' ORDER BY datetime ASC'
+    qry = 'select datetime,SUM(CAST(lib_counts AS int)) as users from ' + table + ' GROUP BY datetime ORDER BY datetime ASC'
     df_coll_lib1 = pd.read_sql_query(qry,con)
+
     table = tables[1]
-    qry = 'select * from ' + table + ' ORDER BY datetime ASC'
+    qry = 'select datetime,SUM(CAST(lib_counts AS int)) as users from ' + table + ' GROUP BY datetime ORDER BY datetime ASC'
     df_coll_lib2 = pd.read_sql_query(qry,con)
+
     table = tables[2]
-    qry = 'select * from ' + table + ' ORDER BY datetime ASC'
+    qry = 'select datetime,SUM(CAST(lib_counts AS int)) as users from ' + table + ' GROUP BY datetime ORDER BY datetime ASC'
     df_coll_lib3 = pd.read_sql_query(qry,con)
 
     if tab == 'tab-1':
@@ -139,9 +145,9 @@ def render_content(tab):
                 id='graph-1-tabs',
                 figure={
                     'data': [
-                    {'x': df_lib1['datetime'], 'y': df_lib1['lib_counts'], 'type': 'line', 'name': libs_in_category[0]},
-                    {'x': df_lib2['datetime'], 'y': df_lib2['lib_counts'], 'type': 'line', 'name': libs_in_category[1]},
-                    {'x': df_lib3['datetime'], 'y': df_lib3['lib_counts'], 'type': 'line', 'name': libs_in_category[2]}
+                    {'x': df_lib1['datetime'], 'y': df_lib1['users'], 'type': 'line', 'name': libs_in_category[0]},
+                    {'x': df_lib2['datetime'], 'y': df_lib2['users'], 'type': 'line', 'name': libs_in_category[1]},
+                    {'x': df_lib3['datetime'], 'y': df_lib3['users'], 'type': 'line', 'name': libs_in_category[2]}
                     ],
                     'layout':{
                             'xaxis':{
@@ -160,7 +166,8 @@ def render_content(tab):
     elif tab == 'tab-2':
         return html.Div([
             # html.H3('Visualize Trends On Active Users For Libraries in Different Categories',style={'text-align': 'center','padding': '20px 0px 0px 0px'}),
-
+            html.Div([
+                html.H4('choose library',style={'text-align': 'center','padding': '20px 0px 0px 0px'}),
                 html.Div([
                 dcc.Dropdown(
                     id='choose-library',
@@ -168,8 +175,9 @@ def render_content(tab):
                     value='matplotlib'
                 ),
             ],
-            style={'width': '25%', 'text-align': 'center','display': 'inline-block','fontWeight': 'bold'}),
+            style={'width': '80%', 'text-align': 'center','marginLeft': '100px','display': 'inline-block','fontWeight': 'bold'}),
 
+                html.H4('choose category',style={'text-align': 'center','padding': '34px 0px 0px 0px'}),
                 html.Div([
                 dcc.Dropdown(
                     id='choose-collocation-category',
@@ -177,16 +185,16 @@ def render_content(tab):
                     value='Data Wrangling'
                 ),
             ],
-            style={'width': '25%', 'text-align': 'center','display': 'inline-block','fontWeight': 'bold'}),
-
+            style={'width': '80%', 'text-align': 'center','marginLeft': '100px','display': 'inline-block','fontWeight': 'bold'}),
+            ], style={'columnCount': 2}),
 
             dcc.Graph(
                 id='graph-2-tabs',
                 figure={
                     'data': [
-                    {'x': df_coll_lib1['datetime'], 'y': df_coll_lib1['lib_counts'], 'type': 'line', 'name': tables[0]},
-                    {'x': df_coll_lib2['datetime'], 'y': df_coll_lib2['lib_counts'], 'type': 'line', 'name': tables[1]},
-                    {'x': df_coll_lib3['datetime'], 'y': df_coll_lib3['lib_counts'], 'type': 'line', 'name': tables[2]}
+                    {'x': df_coll_lib1['datetime'], 'y': df_coll_lib1['users'], 'type': 'line', 'name': lib_main + ' + ' + libs_in_coll_category[0]},
+                    {'x': df_coll_lib2['datetime'], 'y': df_coll_lib2['users'], 'type': 'line', 'name': lib_main + ' + ' + libs_in_coll_category[1]},
+                    {'x': df_coll_lib3['datetime'], 'y': df_coll_lib3['users'], 'type': 'line', 'name': lib_main + ' + ' + libs_in_coll_category[2]}
                     ],
                     'layout':{
                             'xaxis':{
@@ -209,22 +217,22 @@ def update_graph(lib_category):
     libs_in_category = df_libinfo[df_libinfo['Category']==lib_category]['Libraries'].values.tolist()
 
     table = libs_in_category[0]
-    qry = 'select * from ' + table + ' ORDER BY datetime ASC'
+    qry = 'select datetime,SUM(CAST(lib_counts AS int)) as users from ' + table + ' GROUP BY datetime ORDER BY datetime ASC'
     df_lib1 = pd.read_sql_query(qry,con)
 
     table = libs_in_category[1]
-    qry = 'select * from ' + table + ' ORDER BY datetime ASC'
+    qry = 'select datetime,SUM(CAST(lib_counts AS int)) as users from ' + table + ' GROUP BY datetime ORDER BY datetime ASC'
     df_lib2 = pd.read_sql_query(qry,con)
 
     table = libs_in_category[2]
-    qry = 'select * from ' + table + ' ORDER BY datetime ASC'
+    qry = 'select datetime,SUM(CAST(lib_counts AS int)) as users from ' + table + ' GROUP BY datetime ORDER BY datetime ASC'
     df_lib3 = pd.read_sql_query(qry,con)
 
     return {
         'data': [
-        {'x': df_lib1['datetime'], 'y': df_lib1['lib_counts'], 'type': 'line', 'name': libs_in_category[0]},
-        {'x': df_lib2['datetime'], 'y': df_lib2['lib_counts'], 'type': 'line', 'name': libs_in_category[1]},
-        {'x': df_lib3['datetime'], 'y': df_lib3['lib_counts'], 'type': 'line', 'name': libs_in_category[2]}
+        {'x': df_lib1['datetime'], 'y': df_lib1['users'], 'type': 'line', 'name': libs_in_category[0]},
+        {'x': df_lib2['datetime'], 'y': df_lib2['users'], 'type': 'line', 'name': libs_in_category[1]},
+        {'x': df_lib3['datetime'], 'y': df_lib3['users'], 'type': 'line', 'name': libs_in_category[2]}
         ],
         'layout':{
                 'xaxis':{
@@ -252,6 +260,8 @@ def update_dropdown(libr):
               [State('choose-library', 'value')])
 
 def update_graph(coll_category,libr):
+
+    lib_main = libr
     libs_in_coll_category = df_libinfo[df_libinfo['Category']==coll_category]['Libraries'].values.tolist()
     coll_cats = df_libinfo[df_libinfo['Category']!=df_libinfo[df_libinfo['Libraries']==libr].iloc[0]['Category']]['Category'].unique()
     tables = []
@@ -262,23 +272,23 @@ def update_graph(coll_category,libr):
             tables.append(libr+'_'+lib)
 
     table = tables[0]
-    qry = 'select * from ' + table + ' ORDER BY datetime ASC'
+    qry = 'select datetime,SUM(CAST(lib_counts AS int)) as users from ' + table + ' GROUP BY datetime ORDER BY datetime ASC'
     df_coll_lib1 = pd.read_sql_query(qry,con)
 
     table = tables[1]
-    qry = 'select * from ' + table + ' ORDER BY datetime ASC'
+    qry = 'select datetime,SUM(CAST(lib_counts AS int)) as users from ' + table + ' GROUP BY datetime ORDER BY datetime ASC'
     df_coll_lib2 = pd.read_sql_query(qry,con)
 
     table = tables[2]
-    qry = 'select * from ' + table + ' ORDER BY datetime ASC'
+    qry = 'select datetime,SUM(CAST(lib_counts AS int)) as users from ' + table + ' GROUP BY datetime ORDER BY datetime ASC'
     df_coll_lib3 = pd.read_sql_query(qry,con)
 
 
     return {
         'data': [
-        {'x': df_coll_lib1['datetime'], 'y': df_coll_lib1['lib_counts'], 'type': 'line', 'name': tables[0]},
-        {'x': df_coll_lib2['datetime'], 'y': df_coll_lib2['lib_counts'], 'type': 'line', 'name': tables[1]},
-        {'x': df_coll_lib3['datetime'], 'y': df_coll_lib3['lib_counts'], 'type': 'line', 'name': tables[2]}
+        {'x': df_coll_lib1['datetime'], 'y': df_coll_lib1['users'], 'type': 'line', 'name': lib_main + ' + ' + libs_in_coll_category[0]},
+        {'x': df_coll_lib2['datetime'], 'y': df_coll_lib2['users'], 'type': 'line', 'name': lib_main + ' + ' + libs_in_coll_category[1]},
+        {'x': df_coll_lib3['datetime'], 'y': df_coll_lib3['users'], 'type': 'line', 'name': lib_main + ' + ' + libs_in_coll_category[2]}
         ],
         'layout':{
                 'xaxis':{
