@@ -10,6 +10,20 @@ from combinations import GetCollocatedLibraries
 
 class FileProcessor(object):
 
+    """
+    1. Get jupyter notebook filepaths (.ipynb), notebook_id and
+        repo_id to be processed
+    2. Get timestamp for each notebook_id from it's repository metadata (.json)
+        file
+    3. Extract libraries used by each notebook_id
+    4. Get information on libraries that need to be chosen from
+        extracted libraries to store in the database from LibraryInfo.csv
+    5. Get collocation (pairs of libraries) from chosen libraries
+    6. Convert information into a list having elements of type:
+        ('library','timestamp'),1)
+
+    """
+
     def ProcessEachFile(self, file_info):
 
         returndata = []

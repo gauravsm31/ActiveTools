@@ -55,7 +55,7 @@ class parallel_processor(object):
 
         print('got file df ..................................')
 
-        # Farm out juoyter notebook files to Spark workers with a flatMap and
+        # Farm out jupyter notebook files to Spark workers with a flatMap and
         # aggregrate users for each month for each library
         process_file = FileProcessor()
         processed_rdd = files_urls_df.rdd.flatMap(process_file.ProcessEachFile) \

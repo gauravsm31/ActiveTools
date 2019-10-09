@@ -4,6 +4,14 @@ from mapping_files import parallel_processor
 from listfilepaths import get_filepaths
 
 class ProcessNotebookData(object):
+    """
+    1. Get jupyter notebook filepaths (.ipynb) to be processed in one batch
+    2. Convert filepaths into a spark DataFrame
+    3. Extract notebook_id from filepath, go to notebooks.csv to attach repo_id
+        for each notebook_id
+    4. Send files to where filepaths and repo_ids are are
+        ditributed to different nodes for processing
+    """
 
     def run(self,parent_folder,notebooks_folder_names):
 

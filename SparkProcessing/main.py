@@ -4,9 +4,10 @@ def main():
     parent_folder = ''
 
     # notebooks_folder_names must have entries of same length
-    notebooks_folder_names = ['notebooks_1/','notebooks_2/','notebooks_3/','notebooks_4/','notebooks_5/','notebooks_6/']
+    # Enter folder/folders having less than a total of
+    # 600000 (240GB) notebooks to avoid filling up memory
+    notebooks_folder_names = ['notebooks_6/']
 
-    # notebooks_folder = "notebooks_1/"
     proc = ProcessNotebookData()
     proc.run(parent_folder,notebooks_folder_names)
 
