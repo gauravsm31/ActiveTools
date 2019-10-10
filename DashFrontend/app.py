@@ -60,7 +60,7 @@ tabs_styles = {
 tab_style = {
     'borderBottom': '1px solid #d6d6d6',
     'padding': '8px',
-    'fontWeight': 'bold'
+    'fontWeight': 'bold',
 }
 
 tab_selected_style = {
@@ -69,7 +69,7 @@ tab_selected_style = {
     'backgroundColor': '#4582c2',
     'color': '#fcfcfb',
     'padding': '8px',
-    'fontWeight': 'bold'
+    'fontWeight': 'bold',
 }
 
 
@@ -100,7 +100,7 @@ def render_content(tab):
     table = libs_in_category[1]
     qry = 'select datetime,SUM(CAST(lib_counts AS int)) as users from ' + table + ' GROUP BY datetime ORDER BY datetime ASC'
     df_lib2 = pd.read_sql_query(qry,con)
-    
+
     table = libs_in_category[2]
     qry = 'select datetime,SUM(CAST(lib_counts AS int)) as users from ' + table + ' GROUP BY datetime ORDER BY datetime ASC'
     df_lib3 = pd.read_sql_query(qry,con)
@@ -135,10 +135,11 @@ def render_content(tab):
                 dcc.Dropdown(
                     id='choose-category',
                     options=[{'label': i, 'value': i} for i in available_categories],
-                    value='Visualization'
+                    value='Visualization',
+                    clearable=False,
                 ),
             ],
-            style={'width': '50%', 'text-align': 'center','marginLeft': '420px','display': 'inline-block','fontWeight': 'bold'}),
+            style={'width': '50%', 'text-align': 'center','marginLeft': '25%','display': 'inline-block','fontWeight': 'bold','fontsize':'120%'}),
             # ,'left': '50%','right': 'auto'
 
             dcc.Graph(
@@ -155,11 +156,16 @@ def render_content(tab):
                                 },
                             'yaxis':{
                                 'title':'Users',
-                                }
+                                },
+                            'font': dict(
+                                #family='sans-serif',
+                                size=18,
+                                # color='#000'
+                            ),
                     }
                 }, style={'height': '600px'}
             )
-        ], style={'marginLeft': '100px', 'marginRight': '100px'})
+        ], style={'marginLeft': '5%', 'marginRight': '5%'})
 
 
 
@@ -167,26 +173,32 @@ def render_content(tab):
         return html.Div([
             # html.H3('Visualize Trends On Active Users For Libraries in Different Categories',style={'text-align': 'center','padding': '20px 0px 0px 0px'}),
             html.Div([
-                html.H4('choose library',style={'text-align': 'center','padding': '20px 0px 0px 0px'}),
                 html.Div([
-                dcc.Dropdown(
-                    id='choose-library',
-                    options=[{'label': i, 'value': i} for i in available_libraries],
-                    value='matplotlib'
-                ),
-            ],
-            style={'width': '80%', 'text-align': 'center','marginLeft': '100px','display': 'inline-block','fontWeight': 'bold'}),
+                    html.H4('choose library',style={'text-align': 'center','padding': '20px 0px 0px 0px'}),
+                    html.Div([
+                    dcc.Dropdown(
+                        id='choose-library',
+                        options=[{'label': i, 'value': i} for i in available_libraries],
+                        value='matplotlib',
+                        clearable=False,
+                    ),
+                ],
+                style={'width': '80%', 'text-align': 'center','marginLeft': '10%','display': 'inline-block','fontWeight': 'bold'}),
+                ], className="six columns"),
 
-                html.H4('choose category',style={'text-align': 'center','padding': '34px 0px 0px 0px'}),
                 html.Div([
-                dcc.Dropdown(
-                    id='choose-collocation-category',
-                    options=[{'label': i, 'value': i} for i in coll_cats],
-                    value='Data Wrangling'
-                ),
-            ],
-            style={'width': '80%', 'text-align': 'center','marginLeft': '100px','display': 'inline-block','fontWeight': 'bold'}),
-            ], style={'columnCount': 2}),
+                    html.H4('choose category',style={'text-align': 'center','padding': '20px 0px 0px 0px'}),
+                    html.Div([
+                    dcc.Dropdown(
+                        id='choose-collocation-category',
+                        options=[{'label': i, 'value': i} for i in coll_cats],
+                        value='Data Wrangling',
+                        clearable=False,
+                    ),
+                ],
+                style={'width': '80%', 'text-align': 'center','marginLeft': '10%','display': 'inline-block','fontWeight': 'bold'}),
+                ], className="six columns"),
+            ], className="row"),
 
             dcc.Graph(
                 id='graph-2-tabs',
@@ -202,11 +214,16 @@ def render_content(tab):
                                 },
                             'yaxis':{
                                 'title':'Users',
-                                }
+                                },
+                                'font': dict(
+                                    #family='sans-serif',
+                                    size=18,
+                                    # color='#000'
+                                ),
                     }
                 }, style={'height': '600px'}
             )
-        ], style={'marginLeft': '100px', 'marginRight': '100px'})
+        ], style={'marginLeft': '5%', 'marginRight': '5%'})
 
 
 @app.callback(Output('graph-1-tabs', 'figure'),
@@ -240,7 +257,12 @@ def update_graph(lib_category):
                     },
                 'yaxis':{
                     'title':'Users',
-                    }
+                    },
+                    'font': dict(
+                        #family='sans-serif',
+                        size=18,
+                        # color='#000'
+                    ),
         }
     }
 
@@ -296,7 +318,12 @@ def update_graph(coll_category,libr):
                     },
                 'yaxis':{
                     'title':'Users',
-                    }
+                    },
+                    'font': dict(
+                        #family='sans-serif',
+                        size=18,
+                        #color='#000'
+                    ),
         }
     }
 
