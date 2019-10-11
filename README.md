@@ -2,7 +2,7 @@
 A data pipeline tool for programmers to explore trends in actively used and collocated libraries in various application categories.
 
 # Motivation
-One of the most important initial decisions to make when developing in a new software application is which programming tools to use. With new tools being developed everyday and classical tools continuously improving, it can be overwhelming to choose a tool since many of them perform the same task. It can cost a company $15K to $700K to remediate a problem that occurs when a company chooses the wrong software. To make this decision easy, I have built ActiveTools. 
+One of the most important initial decisions to make when developing in a new software application is which programming tools to use. With new tools being developed everyday and classical tools continuously improving, it can be overwhelming to choose a set of tools since many of them perform the same task. It can cost a company $15K to $700K to remediate a problem that occurs when a company chooses the wrong software. To make this decision easy, I have built ActiveTools. 
 
 In general, tools that have a large user base have good community support, are easy to use and compatible with other tools. ActiveTools is a dashboard that shows trends on actively used and collocated libraries for different tasks so that you chose the right tools for your project. 
 
