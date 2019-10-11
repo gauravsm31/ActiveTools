@@ -26,11 +26,11 @@ Rule, Adam; Tabard, Aurélien; Hollan, James D. (2018). Data from: Exploration a
 
 # Tech Stack
 ![Tech stack used in ActeveTools](https://github.com/gauravsm31/ActiveTools/blob/master/Image/TechStack.png)
-I used the following tools for building the pipeline. \
-I used an Amazon S3 bucket to host the Jupyter Notebooks that have a “notebook (.ipynb)” format, mapping of Notebooks to it’s repository in a “csv” format and metadata on repositories in “json” format. \
-I processed this data in parallel using an Apache Spark cluster having four nodes. \
-I stored the processed data for each library in a postgres database and display trends on actively used tools using Dash. \
-If there is a new library that whose trends you want to analyse, you can add the name of the library in a csv file on Amazon S3 and the pipeline will generate a new table for that library in the database.
+The following tools were used for building the pipeline. \
+An Amazon S3 bucket was used to host the Jupyter Notebooks that have a “notebook (.ipynb)” format, mapping of Notebooks to it’s repository in a “csv” format and metadata on repositories in “json” format. \
+This data was processed in parallel using an Apache Spark cluster having four nodes. \
+The processed data for each library was stored in a postgres database and display trends on actively used tools using Dash. \
+If there is a new library whose trends need to be analysed, it can be added the list of libraries in a csv file on Amazon S3 and the pipeline will generate a new table for that library in the database.
 
 # Dashboard
 Please look at the [ActiveTools website](http://www.activetools.xyz) to view the processed data. 
