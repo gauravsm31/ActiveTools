@@ -1,14 +1,14 @@
 # ActiveTools
-A data pipeline tool for programmers to explore trends in actively used and collocated libraries in various application categories.
+A data pipeline tool for software developers to explore trends in actively and collectively used programming tools for different tasks.
 
 # Motivation
-One of the most important initial decisions to make when developing in a new software application is which programming tools to use. With new tools being developed everyday and classical tools continuously improving, it can be overwhelming to choose a set of tools since many of them perform the same task. It can cost a company $15K to $700K to remediate a problem that occurs when a company chooses the wrong software. To make this decision easy, I have built ActiveTools. 
+One of the most first important decisions to make when developing in a new software application is which programming tools to use. With new tools being developed everyday and classical tools continuously improving, it can be overwhelming to choose a set of tools since many of them perform the same task. It can cost a company $15K to $700K to remediate a problem that occurs when a company chooses the wrong tool. To make this decision easy, I have built ActiveTools. 
 
-ActiveTools is a dashboard that shows trends on actively used and collocated libraries for different tasks so that you chose the right tools for your project. In general, tools that have a large user base have good community support, are easy to use and compatible with other tools. 
+ActiveTools is a dashboard that shows trends on actively and collectively used programming tools for different tasks so that you chose the right tools for your project. In general, tools that have a large user base have good community support, are easy to use and tools often used together are compatible with each other. 
 
 # Dataset
 
-In July 2017, a team in Design Lab at UC San Diego queried, downloaded, and analyzed approximately 1.25 million Jupyter Notebooks in public repositories on GitHub. By their calculation this was about 95% of all Jupyter Notebooks publicly available on GitHub at the time. This dataset includes: \
+In July 2017, a team in the Design Lab at UC San Diego queried, downloaded, and analyzed approximately 1.25 million Jupyter Notebooks in public repositories on GitHub. By their calculation this was about 95% of all Jupyter Notebooks publicly available on GitHub at the time. This dataset includes: \
 ~1.25 million Jupyter Notebooks \
 Metadata about each notebook \
 Metadata about each of the nearly 200,000 public repositories that contained a Jupyter Notebook \
