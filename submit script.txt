@@ -1,2 +1,0 @@
-spark-submit --master spark://ec2-54-244-2-49.us-west-2.compute.amazonaws.com:7077 --packages org.postgresql:postgresql:42.1.1 mapping_files.py
-
