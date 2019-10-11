@@ -33,4 +33,4 @@ I stored the processed data for each library in a postgres database and display 
 If there is a new library that whose trends you want to analyse, you can add the name of the library in a csv file on Amazon S3 and the pipeline will generate a new table for that library in the database.
 
 # Dashboard
-Please look at the [ActeveTools website](www.activetools.xyz) to view the processed data. 
+Please look at the [ActiveTools website](http://www.activetools.xyz) to view the processed data. 
