@@ -26,7 +26,7 @@ Rule, Adam; Tabard, Aurélien; Hollan, James D. (2018). Data from: Exploration a
 
 # Tech Stack
 ![Tech stack used in ActeveTools](https://github.com/gauravsm31/ActiveTools/blob/master/Image/TechStack.png)
-The following tools were used for building the pipeline:
+The following tools were used for building the pipeline: \
 An Amazon S3 bucket was used to host the Jupyter Notebooks that have a “notebook (.ipynb)” format, mapping of Notebooks to it’s repository in a “csv” format and metadata on repositories in “json” format. \
 This data was processed in parallel using an Apache Spark cluster having four nodes. \
 The processed data for each library was stored in a postgres database and display trends on actively used tools using Dash. \
