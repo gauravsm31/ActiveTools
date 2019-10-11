@@ -8,8 +8,7 @@ In general, tools that have a large user base have good community support, are e
 
 # Dataset
 
-In July 2017, a team in Design Lab at UC San Diego queried, downloaded, and analyzed approximately 1.25 million Jupyter Notebooks in public repositories on GitHub. By their calculation this was about 95% of all Jupyter Notebooks publicly available on GitHub at the time. This dataset includes: \ 
-
+In July 2017, a team in Design Lab at UC San Diego queried, downloaded, and analyzed approximately 1.25 million Jupyter Notebooks in public repositories on GitHub. By their calculation this was about 95% of all Jupyter Notebooks publicly available on GitHub at the time. This dataset includes: \
 ~1.25 million Jupyter Notebooks \
 Metadata about each notebook \
 Metadata about each of the nearly 200,000 public repositories that contained a Jupyter Notebook \
@@ -27,7 +26,11 @@ Rule, Adam; Tabard, Aurélien; Hollan, James D. (2018). Data from: Exploration a
 
 # Tech Stack
 ![Tech stack used in ActeveTools](https://github.com/gauravsm31/ActiveTools/blob/master/Image/TechStack.png)
-I used the following tools for building the pipeline.  I used an Amazon S3 bucket to host the Jupyter Notebooks that have a “notebook (.ipynb)” format, mapping of Notebooks to it’s repository in a “csv” format and metadata on repositories in “json” format.  I processed this data in parallel using an Apache Spark cluster having four nodes.  I stored the processed data for each library in a postgres database and display trends on actively used tools using Dash.  If there is a new library that whose trends you want to analyse, you can add the name of the library in a csv file on Amazon S3 and the pipeline will generate a new table for that library in the database.
+I used the following tools for building the pipeline. \
+I used an Amazon S3 bucket to host the Jupyter Notebooks that have a “notebook (.ipynb)” format, mapping of Notebooks to it’s repository in a “csv” format and metadata on repositories in “json” format. \
+I processed this data in parallel using an Apache Spark cluster having four nodes. \
+I stored the processed data for each library in a postgres database and display trends on actively used tools using Dash. \
+If there is a new library that whose trends you want to analyse, you can add the name of the library in a csv file on Amazon S3 and the pipeline will generate a new table for that library in the database.
 
 # Dashboard
 Please look at the [ActeveTools website](www.activetools.xyz) to view the processed data. 
